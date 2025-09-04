@@ -30,8 +30,10 @@ module.exports = function (User) {
 		const searchParams = normalizeSearchParams(data);
 		const startTime = process.hrtime();
 
-		let uids = await performInitialSearch(searchParams, data);
-		uids = await processSearchResults(uids, data);
+		const normalizedData = { ...data, ...searchParams };
+
+		let uids = await performInitialSearch(searchParams, normalizedData);
+		uids = await processSearchResults(uids, normalizedData);
 		
 		const searchResult = await buildSearchResult(uids, searchParams, startTime);
 		return searchResult;
@@ -181,7 +183,8 @@ module.exports = function (User) {
 		}
 		
 		if (Array.isArray(assertion) && assertion.length) {
-			return assertion.map(u => u.id);
+			const uids = assertion.map(u => u.id);
+			return uids;
 		}
 
 		return [];
