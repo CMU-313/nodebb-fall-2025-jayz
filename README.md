@@ -1,3 +1,7 @@
+## Built by _The JayZ Crew_:
+
+- Zhiyuan Guo, [@ZhYGuoL](https://github.com/ZhYGuoL)
+
 # ![NodeBB](public/images/sm-card.png)
 
 ![Team Contribution Summary](https://raw.githubusercontent.com/CMU-313/NodeBB/gittogether-svg/activity.svg)
