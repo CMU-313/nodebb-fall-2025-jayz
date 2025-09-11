@@ -2,7 +2,7 @@
 
 - Zhiyuan Guo, [@ZhYGuoL](https://github.com/ZhYGuoL)
 - Ana Fontan, [@anafontan] (https://github.com/anafontan)
-- Aaron HuSUn, [@aahusun](https://github.com/aahusun)
+- Aaron HuSun, [@aahusun](https://github.com/aahusun)
 
 # ![NodeBB](public/images/sm-card.png)
 
