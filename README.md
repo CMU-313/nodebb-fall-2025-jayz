@@ -1,6 +1,7 @@
 ## Built by _The JayZ Crew_:
 
 - Zhiyuan Guo, [@ZhYGuoL](https://github.com/ZhYGuoL)
+- Ana Fontan, [@anafontan] (https://github.com/anafontan)
 
 # ![NodeBB](public/images/sm-card.png)
 
