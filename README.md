@@ -3,6 +3,7 @@
 - Zhiyuan Guo, [@ZhYGuoL](https://github.com/ZhYGuoL)
 - Ana Fontan, [@anafontan] (https://github.com/anafontan)
 - Aaron HuSun, [@aahusun](https://github.com/aahusun)
+- Jaimin Fee, [@jaiminfee](https://github.com/jaiminfee)
 
 # ![NodeBB](public/images/sm-card.png)
 
