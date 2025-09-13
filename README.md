@@ -4,6 +4,7 @@
 - Ana Fontan, [@anafontan] (https://github.com/anafontan)
 - Aaron HuSun, [@aahusun](https://github.com/aahusun)
 - Jaimin Fee, [@jaiminfee](https://github.com/jaiminfee)
+- Evan Cen, [@cenevan](https://github.com/cenevan)
 
 # ![NodeBB](public/images/sm-card.png)
 
