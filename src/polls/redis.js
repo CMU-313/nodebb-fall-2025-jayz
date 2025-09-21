@@ -64,9 +64,41 @@ Polls.getPoll = async function (pollId) {
 Polls.vote = async function (pollId, uid, optionId) {
 	// Single-choice polls store uid->optionId in a hash
 	const responsesKey = `poll:${pollId}:responses`;
-	await db.setObjectField(responsesKey, uid, optionId);
-	// increment option vote counter
-	await db.increment(`poll:${pollId}:option:${optionId}:votes`);
+	const votesKey = optId => `poll:${pollId}:option:${optId}:votes`;
+
+	// Read previous vote (if any)
+	const prev = await db.getObjectField(responsesKey, uid);
+	if (prev && String(prev) === String(optionId)) {
+		// idempotent: same vote, nothing to do
+		return true;
+	}
+
+	// Perform an atomic transaction: set new response, increment new option votes,
+	// and decrement previous option votes if present.
+	// We use the underlying redis client MULTI/EXEC via db.client
+	// The db adapter exposes the redis client at db.client
+	const { client } = db;
+	if (!client || !client.multi) {
+		// Fallback to non-atomic behaviour if transaction isn't available
+		await db.setObjectField(responsesKey, uid, optionId);
+		await db.increment(votesKey(optionId));
+		if (prev) {
+			await db.decrObjectField(votesKey(prev), '0');
+		}
+		return true;
+	}
+
+	const multi = client.multi();
+	// set user's response in the responses hash
+	multi.hset(responsesKey, String(uid), String(optionId));
+	// increment the new option's votes
+	multi.incr(votesKey(optionId));
+	// decrement previous option's votes (only if prev exists)
+	if (prev) {
+		multi.decr(votesKey(prev));
+	}
+
+	await multi.exec();
 	return true;
 };
 
