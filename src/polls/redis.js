@@ -45,7 +45,7 @@ Polls.addOption = async function (pollId, text, sort = 0) {
 	};
 	await db.setObject(key, obj);
 	// push option id to poll options list
-	await db.listPush(`poll:${pollId}:options`, optionId);
+	await db.listAppend(`poll:${pollId}:options`, optionId);
 	return optionId;
 };
 
