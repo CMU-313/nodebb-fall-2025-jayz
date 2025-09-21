@@ -10,6 +10,7 @@
 @import "./manage/categories";
 @import "./manage/privileges";
 @import "./manage/tags";
+@import "./manage/polls";
 @import "./manage/groups";
 @import "./settings/api";
 @import "./appearance/customise";
@@ -43,17 +44,22 @@ body {
 		padding: $spacer * 1.5;
 		padding-top: 0;
 	}
+
 	.acp-page-main-header {
 		background-color: var(--bs-body-bg);
 	}
 
-	.settings, .categories, .category, .admins-mods {
+	.settings,
+	.categories,
+	.category,
+	.admins-mods {
 		hr {
 			color: $gray-500;
 		}
 	}
 
-	.form-control::placeholder, .bootstrap-tagsinput::placeholder {
+	.form-control::placeholder,
+	.bootstrap-tagsinput::placeholder {
 		color: $gray-500 !important;
 	}
 
@@ -79,6 +85,7 @@ body {
 			}
 		}
 	}
+
 	button.floating-button {
 		background: $primary !important;
 	}
@@ -103,7 +110,7 @@ body {
 			color: var(--bs-body-color);
 		}
 
-		&.card-danger >.card-header {
+		&.card-danger>.card-header {
 			@include acp-panel-heading;
 		}
 	}
@@ -112,8 +119,10 @@ body {
 		.fa-nbb-none {
 			border: 1px dotted black;
 		}
+
 		.nbb-fa-icons {
 			margin: 0;
+
 			i {
 				width: 36px;
 				height: 36px;
@@ -123,7 +132,8 @@ body {
 				color: $gray-700;
 				margin: 4px;
 
-				&:hover, &.selected {
+				&:hover,
+				&.selected {
 					background: $primary;
 					color: white;
 				}
@@ -132,7 +142,8 @@ body {
 	}
 
 	#taskbar {
-		display: none; /* not sure why I have to do this, but it only seems to show up on prod */
+		display: none;
+		/* not sure why I have to do this, but it only seems to show up on prod */
 	}
 
 	/* Allows the autocomplete dropbox to appear on top of a modal's backdrop */
@@ -145,6 +156,7 @@ body {
 		width: 100%;
 		background-color: var(--bs-body-bg);
 		border: var(--bs-border-width) solid var(--bs-border-color);
+
 		input {
 			font-size: 0.875rem;
 			width: 64px;
@@ -154,10 +166,15 @@ body {
 }
 
 .dropdown-left {
-	.dropdown-menu { --bs-position: start; }
+	.dropdown-menu {
+		--bs-position: start;
+	}
 }
+
 .dropdown-right {
-	.dropdown-menu { --bs-position: end; }
+	.dropdown-menu {
+		--bs-position: end;
+	}
 }
 
 [component="category-selector"] {
@@ -180,7 +197,7 @@ body {
 	}
 }
 
-* > .checkbox:first-child {
+*>.checkbox:first-child {
 	margin-top: 0px;
 }
 
@@ -191,13 +208,13 @@ body {
 }
 
 .caret {
-    display: inline-block;
-    width: 0;
-    height: 0;
-    vertical-align: middle;
-    border-top: 4px dashed;
-    border-right: 4px solid transparent;
-    border-left: 4px solid transparent;
+	display: inline-block;
+	width: 0;
+	height: 0;
+	vertical-align: middle;
+	border-top: 4px dashed;
+	border-right: 4px solid transparent;
+	border-left: 4px solid transparent;
 }
 
 #save {
