@@ -1,0 +1,272 @@
+/* Admin Poll Management Styles */
+.polls {
+	.acp-page-main-header {
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(10px);
+		border-radius: 0 0 8px 8px;
+		margin: -1rem -1rem 1rem -1rem;
+		padding: 1.5rem 1rem 1rem 1rem;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	}
+
+	.polls-content {
+		.card {
+			border: none;
+			box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+			border-radius: 12px;
+			transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+			&:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+			}
+
+			.card-header {
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				color: white;
+				border-radius: 12px 12px 0 0;
+				border: none;
+				padding: 1rem 1.5rem;
+
+				.card-title {
+					font-weight: 600;
+					letter-spacing: -0.02em;
+				}
+			}
+
+			.card-body {
+				padding: 1.5rem;
+			}
+		}
+
+		.badge {
+			font-weight: 500;
+			padding: 0.5rem 0.75rem;
+			border-radius: 20px;
+		}
+	}
+}
+
+/* Poll Creation Modal Styles */
+#create-poll-modal {
+	.modal-dialog {
+		max-width: 800px;
+	}
+
+	.modal-content {
+		border: none;
+		border-radius: 16px;
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+	}
+
+	.modal-header {
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		color: white;
+		border-radius: 16px 16px 0 0;
+		border: none;
+		padding: 1.5rem 2rem;
+
+		.modal-title {
+			font-weight: 600;
+			font-size: 1.25rem;
+		}
+
+		.btn-close {
+			filter: brightness(0) invert(1);
+			opacity: 0.8;
+
+			&:hover {
+				opacity: 1;
+			}
+		}
+	}
+
+	.modal-body {
+		padding: 2rem;
+		background: #fafbfc;
+
+		.form-label {
+			font-weight: 600;
+			color: #374151;
+			margin-bottom: 0.5rem;
+		}
+
+		.form-control, .form-select {
+			border: 2px solid #e5e7eb;
+			border-radius: 8px;
+			padding: 0.75rem 1rem;
+			transition: all 0.2s ease;
+
+			&:focus {
+				border-color: #667eea;
+				box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+			}
+		}
+
+		.form-text {
+			color: #6b7280;
+			font-size: 0.875rem;
+		}
+
+		.poll-option-item {
+			animation: slideInUp 0.3s ease;
+
+			.form-control {
+				background: white;
+			}
+
+			.remove-option {
+				border-radius: 8px;
+				min-width: 40px;
+				transition: all 0.2s ease;
+
+				&:hover:not(:disabled) {
+					background-color: #dc3545;
+					border-color: #dc3545;
+					color: white;
+					transform: scale(1.05);
+				}
+
+				&:disabled {
+					opacity: 0.4;
+				}
+			}
+		}
+
+		.form-check {
+			padding: 0.75rem;
+			background: white;
+			border-radius: 8px;
+			border: 2px solid #e5e7eb;
+			margin-bottom: 0.5rem;
+			transition: all 0.2s ease;
+
+			&:hover {
+				border-color: #d1d5db;
+			}
+
+			.form-check-input {
+				&:checked {
+					background-color: #667eea;
+					border-color: #667eea;
+				}
+			}
+
+			.form-check-label {
+				font-weight: 500;
+				color: #374151;
+				cursor: pointer;
+			}
+		}
+	}
+
+	.modal-footer {
+		padding: 1.5rem 2rem;
+		background: white;
+		border-radius: 0 0 16px 16px;
+		border: none;
+
+		.btn {
+			padding: 0.75rem 1.5rem;
+			border-radius: 8px;
+			font-weight: 600;
+			transition: all 0.2s ease;
+
+			&.btn-primary {
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				border: none;
+
+				&:hover {
+					transform: translateY(-2px);
+					box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+				}
+			}
+
+			&.btn-secondary {
+				background: #6b7280;
+				border: none;
+
+				&:hover {
+					background: #4b5563;
+					transform: translateY(-1px);
+				}
+			}
+		}
+	}
+}
+
+/* Animations */
+@keyframes slideInUp {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Button Enhancements */
+.btn {
+	&.btn-light {
+		background: white;
+		border: 2px solid #e5e7eb;
+		transition: all 0.2s ease;
+
+		&:hover {
+			border-color: #d1d5db;
+			transform: translateY(-1px);
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		}
+	}
+
+	&.btn-primary {
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		border: none;
+		font-weight: 600;
+		transition: all 0.2s ease;
+
+		&:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+		}
+	}
+}
+
+/* Input Group Enhancements */
+.input-group {
+	.form-control {
+		border-right: none;
+
+		&:focus {
+			z-index: 3;
+		}
+	}
+
+	.input-group-text {
+		background: white;
+		border-left: none;
+		border: 2px solid #e5e7eb;
+		color: #6b7280;
+	}
+}
+
+/* Alert Styling */
+.alert {
+	border: none;
+	border-radius: 8px;
+	padding: 1rem 1.25rem;
+
+	&.alert-info {
+		background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
+		color: #01579b;
+		border-left: 4px solid #0277bd;
+	}
+}
+
+/* Statistics Cards */
+.card .badge {
+	font-size: 0.875rem;
+	font-weight: 600;
+}
