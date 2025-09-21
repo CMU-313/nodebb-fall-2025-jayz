@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 // Use the project's test database mock so the global before hook sets up/flushes the test DB
 const db = require('./mocks/databasemock');
