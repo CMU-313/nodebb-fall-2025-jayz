@@ -141,6 +141,10 @@ module.exports = function (User) {
 		if (fields.includes('username') && !fields.includes('fullname')) {
 			addField('fullname');
 		}
+
+		if (fields.includes('username') && !fields.includes('nickname')) {
+			addField('nickname');
+		}
 	}
 
 	function uidsToUsers(uids, uniqueUids, usersData) {
@@ -332,7 +336,9 @@ module.exports = function (User) {
 		}
 
 		user.displayname = validator.escape(String(
-			meta.config.showFullnameAsDisplayName && showfullname && user.fullname ?
+			user.nickname && user.nickname.trim()
+			? user.nickname 
+			: meta.config.showFullnameAsDisplayName && showfullname && user.fullname ?
 				user.fullname :
 				user.username
 		));
