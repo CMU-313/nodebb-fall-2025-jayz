@@ -48,5 +48,6 @@ module.exports = function (app, middleware, controllers) {
 	router.post('/polls', [...middlewares, middleware.ensureLoggedIn, middleware.applyCSRF], helpers.tryRoute(pollsController.create));
 	router.get('/polls/:id', [...middlewares], helpers.tryRoute(pollsController.get));
 	router.post('/polls/:id/vote', [...middlewares, middleware.ensureLoggedIn, middleware.applyCSRF], helpers.tryRoute(pollsController.vote));
+	router.post('/polls/:id/options', [...middlewares, middleware.ensureLoggedIn, middleware.applyCSRF], helpers.tryRoute(pollsController.addOption));
 	router.get('/polls/:id/results', [...middlewares], helpers.tryRoute(pollsController.results));
 };

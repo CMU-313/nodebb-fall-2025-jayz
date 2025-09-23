@@ -36,6 +36,12 @@ pollsController.vote = async function (req, res) {
     if (!validator.isInt(String(pollId))) return res.status(400).json({ error: 'invalid_poll_id' });
     if (!optionId) return res.status(400).json({ error: 'missing_option_id' });
 
+    // Validate option belongs to this poll
+    const poll = await Polls.getPoll(pollId);
+    if (!poll) return res.status(404).json({ error: 'not_found' });
+    const belongs = (poll.options || []).some(o => String(o.option_id) === String(optionId));
+    if (!belongs) return res.status(400).json({ error: 'invalid_option_for_poll' });
+
     try {
         await Polls.vote(pollId, uid, optionId);
         res.json({ success: true });
@@ -52,4 +58,25 @@ pollsController.results = async function (req, res) {
     res.json({ results });
 };
 
-require('../promisify')(pollsController, ['create', 'get', 'vote', 'results']);
+// Add an option to a poll
+pollsController.addOption = async function (req, res) {
+    const pollId = req.params.id;
+    const { text, sort } = req.body || {};
+
+    if (!validator.isInt(String(pollId))) return res.status(400).json({ error: 'invalid_poll_id' });
+    if (!text || !String(text).trim()) return res.status(400).json({ error: 'missing_option_text' });
+
+    // ensure poll exists
+    const poll = await Polls.getPoll(pollId);
+    if (!poll) return res.status(404).json({ error: 'not_found' });
+
+    try {
+        const optionId = await Polls.addOption(pollId, String(text).trim(), sort || 0);
+        res.json({ option_id: optionId });
+    } catch (err) {
+        res.status(500).json({ error: 'add_option_failed' });
+    }
+};
+
+require('../promisify')(pollsController, ['create', 'get', 'vote', 'results', 'addOption']);
+
