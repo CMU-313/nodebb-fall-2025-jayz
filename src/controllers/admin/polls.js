@@ -9,7 +9,7 @@ pollsController.get = async function (req, res) {
 		breadcrumbs: [
 			{ text: 'Admin', url: '/admin' },
 			{ text: 'Manage', url: '/admin/manage' },
-			{ text: 'Polls' }
-		]
+			{ text: 'Polls' },
+		],
 	});
 };
