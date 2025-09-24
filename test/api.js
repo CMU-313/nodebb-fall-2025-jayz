@@ -215,6 +215,18 @@ describe('API', async () => {
 			name: 'Test Group',
 		});
 
+		// Create a sample poll so OpenAPI tests that expect an example poll id will succeed
+		try {
+			const Polls = require('../src/polls/redis');
+			const examplePollId = await Polls.createPoll('API Example Poll', adminUid, {});
+			// ensure mocks point to this existing poll id for schema tests
+			mocks.get['/api/polls/{id}'] = [{ in: 'path', name: 'id', example: String(examplePollId) }];
+			mocks.get['/api/polls/{id}/results'] = [{ in: 'path', name: 'id', example: String(examplePollId) }];
+		} catch (e) {
+			// non-fatal for older test environments
+			console.error('[setupData] failed to create example poll', e && e.stack ? e.stack : e);
+		}
+
 		// Create private groups for pending/invitations
 		const [pending1, pending2, inviteUid] = await Promise.all([
 			await user.create({ username: utils.generateUUID().slice(0, 8) }),

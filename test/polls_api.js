@@ -49,7 +49,9 @@ describe('Polls API', () => {
             console.error('createRes body:', createRes.body);
         }
         assert.strictEqual(createRes.response.statusCode, 200);
-    createdPollId = createRes.body && createRes.body.poll_id;
+    // support both legacy raw body and new API wrapper { status, response }
+    const unwrap = (body) => (body && body.response) ? body.response : body;
+    createdPollId = unwrap(createRes.body) && unwrap(createRes.body).poll_id;
         assert.ok(createdPollId, 'no poll id returned');
 
         // add two options
@@ -57,7 +59,7 @@ describe('Polls API', () => {
     const opt2 = await helpers.request('POST', `/api/polls/${createdPollId}/options`, { jar, body: { text: 'Option B' } });
     assert.strictEqual(opt1.response.statusCode, 200);
     assert.strictEqual(opt2.response.statusCode, 200);
-        const optionId = opt1.body.option_id;
+        const optionId = unwrap(opt1.body) && unwrap(opt1.body).option_id;
 
         // submit a vote
     const voteRes = await helpers.request('POST', `/api/polls/${createdPollId}/vote`, { jar, body: { option_id: optionId } });
@@ -66,7 +68,11 @@ describe('Polls API', () => {
         // fetch results
     const resultsRes = await request.get(`${baseUrl}/api/polls/${createdPollId}/results`, { jar });
     assert.strictEqual(resultsRes.response.statusCode, 200);
-        const results = resultsRes.body.results;
+        const respBody = unwrap(resultsRes.body) || {};
+        let results = respBody.results;
+        if (!Array.isArray(results) && respBody.results && Array.isArray(respBody.results.options)) {
+            results = respBody.results.options;
+        }
         assert.ok(Array.isArray(results));
         // one of the options must show at least 1 vote
         assert.ok(results.some(r => r.votes >= 1));
