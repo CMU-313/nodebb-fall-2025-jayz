@@ -341,8 +341,8 @@ module.exports = function (User) {
 	User.changePassword = async function (uid, data) {
 		validateUid(uid, data);
 		User.isPasswordValid(data.newPassword);
-
-
+		
+		
 		const [isAdmin, hasPassword] = await Promise.all([
 			User.isAdministrator(uid),
 			User.hasPassword(uid),
@@ -356,7 +356,7 @@ module.exports = function (User) {
 
 
 		const isSelf = parseInt(uid, 10) === parseInt(data.uid, 10);
-
+		
 		//another helper function
 		checkAdmin(isAdmin, isSelf);
 
@@ -382,7 +382,12 @@ module.exports = function (User) {
 		const hashedPassword = await User.hashPassword(data.newPassword);
 		await Promise.all([
 			User.setUserFields(data.uid, {
-	@@ -382,7 +391,23 @@ module.exports = function (User) {
+				password: hashedPassword,
+				'password:shaWrapped': 1,
+				rss_token: utils.generateUUID(),
+			}),
+			User.reset.cleanByUid(data.uid),
+			User.reset.updateExpiry(data.uid),
 			User.auth.revokeAllSessions(data.uid),
 			User.email.expireValidation(data.uid),
 		]);
