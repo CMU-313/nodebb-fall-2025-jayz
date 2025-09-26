@@ -1,6 +1,8 @@
 'use strict';
 
 const db = require('../database');
+const privileges = require('../privileges');
+const User = require('../user');
 
 /**
  * Redis-backed Polls implementation
@@ -16,6 +18,17 @@ const db = require('../database');
 const Polls = {};
 
 Polls.createPoll = async function (title, instructorUid = null, settings = {}) {
+	// Check if UserID is valid
+	if (!instructorUid || !(await User.exists(instructorUid))) {
+		throw new Error('[[error:invalid-uid]]');
+	}
+	// Check if user is admin
+	const isAdmin = await privileges.users.isAdministrator(instructorUid);
+	if (!isAdmin) {
+		throw new Error('[[error:no-privileges]]');
+	}
+ 
+
 	const pollId = await db.increment('poll:next_id');
 	const key = `poll:${pollId}`;
 	const now = Date.now();
@@ -34,7 +47,16 @@ Polls.createPoll = async function (title, instructorUid = null, settings = {}) {
 	return pollId;
 };
 
-Polls.addOption = async function (pollId, text, sort = 0) {
+Polls.addOption = async function (instructorUid, pollId, text, sort = 0) {
+	// Check if UserID is valid
+	if (!instructorUid || !(await User.exists(instructorUid))) {
+		throw new Error('[[error:invalid-uid]]');
+	}
+	//Check if PollID exists, throw error if not
+	const pollKey = `poll:${pollId}`;
+	const pollObj = await db.getObject(pollKey);
+	if (!pollObj) throw new Error('[[error:invalid-pollid]]');
+
 	const optionId = await db.increment('poll:option:next_id');
 	const key = `poll:option:${optionId}`;
 	const obj = {
@@ -49,10 +71,18 @@ Polls.addOption = async function (pollId, text, sort = 0) {
 	return optionId;
 };
 
-Polls.getPoll = async function (pollId) {
+Polls.getPoll = async function (pollId, uid) {
 	const key = `poll:${pollId}`;
 	const pollObj = await db.getObject(key);
-	if (!pollObj) return null;
+
+	//If invalid Poll, throw poll ID error
+	if (!pollObj) throw new Error('[[error:invalid-pollid]]');
+
+	// Check if UserID is valid to Vote
+	if (!uid || !(await User.exists(uid))) {
+		throw new Error('[[error:invalid-uid]]');
+	}
+
 	const optionIds = await db.getListRange(`poll:${pollId}:options`, 0, -1) || [];
 	const optionKeys = optionIds.map(id => `poll:option:${id}`);
 	const options = optionKeys.length ? await db.getObjects(optionKeys) : [];
@@ -62,6 +92,16 @@ Polls.getPoll = async function (pollId) {
 };
 
 Polls.vote = async function (pollId, uid, optionId) {
+	// Check if UserID is valid to Vote
+	if (!uid || !(await User.exists(uid))) {
+		throw new Error('[[error:invalid-uid]]');
+	}
+
+	//Check if PollID exists, throw error if not
+	const pollKey = `poll:${pollId}`;
+	const pollObj = await db.getObject(pollKey);
+	if (!pollObj) throw new Error('[[error:invalid-pollid]]');
+	
 	// Single-choice polls store uid->optionId in a hash
 	const responsesKey = `poll:${pollId}:responses`;
 	await db.setObjectField(responsesKey, uid, optionId);
@@ -71,6 +111,11 @@ Polls.vote = async function (pollId, uid, optionId) {
 };
 
 Polls.getResults = async function (pollId) {
+	//Check if PollID exists, throw error if not
+	const pollKey = `poll:${pollId}`;
+	const pollObj = await db.getObject(pollKey);
+	if (!pollObj) throw new Error('[[error:invalid-pollid]]');
+
 	const optionIds = await db.getListRange(`poll:${pollId}:options`, 0, -1) || [];
 	if (!optionIds.length) return [];
 
