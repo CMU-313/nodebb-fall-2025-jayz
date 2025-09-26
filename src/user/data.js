@@ -337,11 +337,11 @@ module.exports = function (User) {
 		}
 
 		user.displayname = validator.escape(String(
-			user.nickname && user.nickname.trim()
-			? user.nickname 
-			: meta.config.showFullnameAsDisplayName && showfullname && user.fullname ?
-				user.fullname :
-				user.username
+			user.nickname && user.nickname.trim() ?
+				user.nickname :
+				meta.config.showFullnameAsDisplayName && showfullname && user.fullname ?
+					user.fullname :
+					user.username
 		));
 	}
 
