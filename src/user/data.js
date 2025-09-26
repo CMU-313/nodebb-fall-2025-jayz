@@ -22,7 +22,7 @@ const intFields = [
 module.exports = function (User) {
 	const fieldWhitelist = [
 		'uid', 'username', 'userslug', 'url', 'email', 'email:confirmed', 'joindate',
-		'lastonline', 'picture', 'icon:bgColor', 'fullname', 'birthday',
+		'lastonline', 'picture', 'icon:bgColor', 'fullname', 'nickname', 'birthday',
 		'aboutme', 'signature', 'uploadedpicture', 'profileviews', 'reputation',
 		'postcount', 'topiccount', 'lastposttime', 'banned', 'banned:expire',
 		'status', 'flags', 'followerCount', 'followingCount', 'cover:url',
@@ -37,6 +37,7 @@ module.exports = function (User) {
 		displayname: '[[global:guest]]',
 		userslug: '',
 		fullname: '[[global:guest]]',
+		nickname: '',
 		email: '',
 		'icon:text': '?',
 		'icon:bgColor': '#aaa',
@@ -140,6 +141,10 @@ module.exports = function (User) {
 
 		if (fields.includes('username') && !fields.includes('fullname')) {
 			addField('fullname');
+		}
+
+		if (fields.includes('username') && !fields.includes('nickname')) {
+			addField('nickname');
 		}
 	}
 
@@ -332,9 +337,11 @@ module.exports = function (User) {
 		}
 
 		user.displayname = validator.escape(String(
-			meta.config.showFullnameAsDisplayName && showfullname && user.fullname ?
-				user.fullname :
-				user.username
+			user.nickname && user.nickname.trim() ?
+				user.nickname :
+				meta.config.showFullnameAsDisplayName && showfullname && user.fullname ?
+					user.fullname :
+					user.username
 		));
 	}
 

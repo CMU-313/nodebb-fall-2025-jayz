@@ -13,6 +13,12 @@
 			</div>
 
 			<div class="mb-3">
+				<label class="form-label fw-bold" for="nickname">[[user:nickname]]</label>
+				<input class="form-control" type="text" id="nickname" name="nickname" placeholder="[[user:nickname]]" value="{nickname}">
+			</div>
+
+
+			<div class="mb-3">
 				<label class="form-label fw-bold" for="birthday">[[user:birthday]]</label>
 				<input class="form-control" type="date" id="birthday" name="birthday" value="{birthday}" placeholder="mm/dd/yyyy">
 			</div>

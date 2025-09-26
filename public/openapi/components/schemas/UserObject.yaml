@@ -40,6 +40,9 @@ UserObject:
     fullname:
       type: string
       example: Mr. Dragon Fruit Jr.
+    nickname:
+      type: string
+      example: Dragon
     displayname:
       type: string
       description: This is either username or fullname depending on forum and user settings
@@ -237,6 +240,9 @@ UserObjectFull:
     fullname:
       type: string
       example: Mr. Dragon Fruit Jr.
+    nickname:
+      type: string
+      example: Dragon
     displayname:
       type: string
       description: This is either username or fullname depending on forum and user settings
