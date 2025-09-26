@@ -52,6 +52,13 @@ Polls.addOption = async function (instructorUid, pollId, text, sort = 0) {
 	if (!instructorUid || !(await User.exists(instructorUid))) {
 		throw new Error('[[error:invalid-uid]]');
 	}
+
+	// Check if user is admin
+	const isAdmin = await privileges.users.isAdministrator(instructorUid);
+	if (!isAdmin) {
+		throw new Error('[[error:no-privileges]]');
+	}
+ 
 	//Check if PollID exists, throw error if not
 	const pollKey = `poll:${pollId}`;
 	const pollObj = await db.getObject(pollKey);
@@ -71,17 +78,12 @@ Polls.addOption = async function (instructorUid, pollId, text, sort = 0) {
 	return optionId;
 };
 
-Polls.getPoll = async function (pollId, uid) {
+Polls.getPoll = async function (pollId) {
 	const key = `poll:${pollId}`;
 	const pollObj = await db.getObject(key);
 
 	//If invalid Poll, throw poll ID error
 	if (!pollObj) throw new Error('[[error:invalid-pollid]]');
-
-	// Check if UserID is valid to Vote
-	if (!uid || !(await User.exists(uid))) {
-		throw new Error('[[error:invalid-uid]]');
-	}
 
 	const optionIds = await db.getListRange(`poll:${pollId}:options`, 0, -1) || [];
 	const optionKeys = optionIds.map(id => `poll:option:${id}`);
@@ -92,8 +94,9 @@ Polls.getPoll = async function (pollId, uid) {
 };
 
 Polls.vote = async function (pollId, uid, optionId) {
+	const ruid = parseInt(uid.replace('uid:', ''), 10);
 	// Check if UserID is valid to Vote
-	if (!uid || !(await User.exists(uid))) {
+	if (!ruid || !(await User.exists(ruid))) {
 		throw new Error('[[error:invalid-uid]]');
 	}
 
