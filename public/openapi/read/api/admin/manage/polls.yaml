@@ -1,0 +1,15 @@
+get:
+  tags:
+    - admin
+  summary: Get poll management page
+  description: This route renders the poll management admin page
+  responses:
+    "200":
+      description: Poll management page successfully rendered
+      content:
+        text/html:
+          schema:
+            type: string
+  security:
+    - Bearer: []
+

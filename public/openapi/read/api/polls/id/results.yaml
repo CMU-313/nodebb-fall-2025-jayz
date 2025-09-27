@@ -1,0 +1,54 @@
+get:
+  tags:
+    - polls
+  summary: Get poll results by ID
+  description: Retrieves the results for a specific poll by its ID
+  parameters:
+    - in: path
+      name: id
+      schema:
+        type: string
+      required: true
+      description: The ID of the poll to retrieve results for
+      example: "123"
+  responses:
+    "200":
+      description: Poll results retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: "../../../../components/schemas/Status.yaml#/Status"
+              response:
+                type: object
+                properties:
+                  pollId:
+                    type: string
+                    description: Unique identifier for the poll
+                  results:
+                    type: object
+                    properties:
+                      options:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              description: Option identifier
+                            text:
+                              type: string
+                              description: Option text
+                            votes:
+                              type: number
+                              description: Number of votes for this option
+                      totalVotes:
+                        type: number
+                        description: Total number of votes cast
+    "404":
+      description: Poll not found
+  security:
+    - Bearer: []
+

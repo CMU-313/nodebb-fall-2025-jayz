@@ -8,10 +8,38 @@ const readline = require('readline');
 const winston = require('winston');
 const chalk = require('chalk');
 
+// Ensure a default Console transport exists when running upgrade scripts directly
+try {
+	if (!winston.transports || (winston.loggers && Object.keys(winston.loggers.loggers).length === 0)) {
+		// In case no transports are configured, add a console transport to the default logger
+		try {
+			winston.add(new winston.transports.Console({ handleExceptions: true }));
+		} catch (e) {
+			// winston.add may not be available depending on winston version; fallback to configure
+			try {
+				winston.configure({ transports: [new winston.transports.Console({ handleExceptions: true })] });
+			} catch (err) {
+				// ignore - best-effort only
+			}
+		}
+	}
+} catch (e) {
+	// noop
+}
+
 const plugins = require('./plugins');
 const db = require('./database');
 const file = require('./file');
 const { paths } = require('./constants');
+// Ensure Winston has at least a Console transport for scripts run directly
+try {
+	const prestart = require('./prestart');
+	if (prestart && typeof prestart.setupWinston === 'function') {
+		prestart.setupWinston();
+	}
+} catch (e) {
+	// If prestart cannot be loaded for some reason, ignore and continue
+}
 /*
  * Need to write an upgrade script for NodeBB? Cool.
  *
