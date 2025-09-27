@@ -6,11 +6,11 @@
 	"dashboard/topics": "Topics",
 	"dashboard/searches": "Searches",
 	"section-general": "General",
-
 	"section-manage": "Manage",
 	"manage/categories": "Categories",
 	"manage/privileges": "Privileges",
 	"manage/tags": "Tags",
+	"manage/polls": "Polls",
 	"manage/users": "Users",
 	"manage/admins-mods": "Admins & Mods",
 	"manage/registration": "Registration Queue",
@@ -20,7 +20,6 @@
 	"manage/ip-blacklist": "IP Blacklist",
 	"manage/uploads": "Uploads",
 	"manage/digest": "Digests",
-
 	"section-settings": "Settings",
 	"settings/general": "General",
 	"settings/homepage": "Home Page",
@@ -45,24 +44,18 @@
 	"settings/web-crawler": "Web Crawler",
 	"settings/sockets": "Sockets",
 	"settings/advanced": "Advanced",
-
 	"settings.page-title": "%1 Settings",
-
 	"section-appearance": "Appearance",
 	"appearance/themes": "Themes",
 	"appearance/skins": "Skins",
 	"appearance/customise": "Custom Content (HTML/JS/CSS)",
-
 	"section-extend": "Extend",
 	"extend/plugins": "Plugins",
 	"extend/widgets": "Widgets",
 	"extend/rewards": "Rewards",
-
 	"section-social-auth": "Social Authentication",
-
 	"section-plugins": "Plugins",
 	"extend/plugins.install": "Install Plugins",
-
 	"section-advanced": "Advanced",
 	"advanced/database": "Database",
 	"advanced/events": "Events",
@@ -72,22 +65,18 @@
 	"advanced/cache": "Cache",
 	"development/logger": "Logger",
 	"development/info": "Info",
-
 	"rebuild-and-restart-forum": "Rebuild & Restart Forum",
 	"rebuild-and-restart": "Rebuild & Restart",
 	"restart-forum": "Restart Forum",
 	"restart": "Restart",
 	"logout": "Log out",
 	"view-forum": "View Forum",
-
 	"search.placeholder": "Search settings",
 	"search.no-results": "No results...",
 	"search.search-forum": "Search the forum for <strong></strong>",
 	"search.keep-typing": "Type more to see results...",
 	"search.start-typing": "Start typing to see results...",
-
 	"connection-lost": "Connection to %1 has been lost, attempting to reconnect...",
-
 	"alerts.version": "Running <strong>NodeBB v%1</strong>",
 	"alerts.upgrade": "Upgrade to v%1"
 }
