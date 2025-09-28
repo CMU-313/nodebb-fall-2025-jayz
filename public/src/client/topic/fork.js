@@ -67,7 +67,6 @@ define('forum/topic/fork', [
 		socket.emit('topics.createTopicFromPosts', {
 			title: forkModal.find('#fork-title').val(),
 			pids: postSelect.pids,
-
 		}, function (err, newTopic) {
 			function fadeOutAndRemove(pid) {
 				components.get('post', 'pid', pid).fadeOut(500, function () {
