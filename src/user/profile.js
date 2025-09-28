@@ -17,7 +17,7 @@ const tx = require('../translator');
 module.exports = function (User) {
 	User.updateProfile = async function (uid, data, extraFields) {
 		let fields = [
-			'username', 'email', 'fullname',
+			'username', 'email', 'fullname', 'nickname',
 			'groupTitle', 'birthday', 'signature', 'aboutme',
 			...await db.getSortedSetRange('user-custom-fields', 0, -1),
 		];
@@ -55,6 +55,9 @@ module.exports = function (User) {
 			} else if (field === 'fullname') {
 				return await updateFullname(updateUid, data.fullname);
 			}
+			else if (field == 'nickname') {
+				return await updateNickname(updateUid, data.nickname);
+			}
 			updateData[field] = data[field];
 		}));
 
@@ -82,6 +85,7 @@ module.exports = function (User) {
 		await isAboutMeValid(callerUid, data);
 		await isSignatureValid(callerUid, data);
 		isFullnameValid(data);
+		isNicknameValid(data);
 		isBirthdayValid(data);
 		isGroupTitleValid(data);
 		await validateCustomFields(data);
@@ -229,6 +233,12 @@ module.exports = function (User) {
 		}
 	}
 
+	function isNicknameValid(data) {
+		if (data.nickname && (validator.isURL(data.nickname) || data.nickname.length > 255)) {
+			throw new Error('[[error:invalid-nickname]]');
+		}
+	}
+
 	function isBirthdayValid(data) {
 		if (!data.birthday) {
 			return;
@@ -338,38 +348,60 @@ module.exports = function (User) {
 		}
 	}
 
-	User.changePassword = async function (uid, data) {
-		if (uid <= 0 || !data || !data.uid) {
-			throw new Error('[[error:invalid-uid]]');
+	async function updateNickname(uid, newNickname) {
+		const nickname = await db.getObjectField(`user:${uid}`, 'nickname');
+		await updateUidMapping('nickname', uid, newNickname, nickname);
+		if (newNickname !== nickname) {
+			if (nickname) {
+				await db.sortedSetRemove('nickname:sorted', `${nickname.toLowerCase()}:${uid}`);
+			}
+			if (newNickname) {
+				await db.sortedSetAdd('nickname:sorted', 0, `${newNickname.toLowerCase()}:${uid}`);
+			}
 		}
+	}
+
+	User.changePassword = async function (uid, data) {
+		validateUid(uid, data);
 		User.isPasswordValid(data.newPassword);
+		
+		
 		const [isAdmin, hasPassword] = await Promise.all([
 			User.isAdministrator(uid),
 			User.hasPassword(uid),
 		]);
 
+
+		//another helper function
 		if (meta.config['password:disableEdit'] && !isAdmin) {
 			throw new Error('[[error:no-privileges]]');
 		}
 
-		const isSelf = parseInt(uid, 10) === parseInt(data.uid, 10);
 
-		if (!isAdmin && !isSelf) {
-			throw new Error('[[user:change-password-error-privileges]]');
-		}
+		const isSelf = parseInt(uid, 10) === parseInt(data.uid, 10);
+		
+		//another helper function
+		checkAdmin(isAdmin, isSelf);
 
 		await plugins.hooks.fire('filter:password.check', { password: data.newPassword, uid: data.uid });
 
-		if (isSelf && hasPassword) {
-			const correct = await User.isPasswordCorrect(data.uid, data.currentPassword, data.ip);
-			if (!correct) {
-				throw new Error('[[user:change-password-error-wrong-current]]');
-			}
-			if (data.currentPassword === data.newPassword) {
-				throw new Error('[[user:change-password-error-same-password]]');
-			}
-		}
 
+		//another helper function
+		await checkSelf(data, isSelf, hasPassword);
+
+		await change(data);
+
+		plugins.hooks.fire('action:password.change', { uid: uid, targetUid: data.uid });
+	};
+
+
+	function validateUid(uid, data) {
+		if (uid <= 0 || !data || !data.uid) {
+			throw new Error('[[error:invalid-uid]]');
+		}
+	}
+
+	async function change(data) {
 		const hashedPassword = await User.hashPassword(data.newPassword);
 		await Promise.all([
 			User.setUserFields(data.uid, {
@@ -382,7 +414,23 @@ module.exports = function (User) {
 			User.auth.revokeAllSessions(data.uid),
 			User.email.expireValidation(data.uid),
 		]);
+	}
 
-		plugins.hooks.fire('action:password.change', { uid: uid, targetUid: data.uid });
-	};
+	function checkAdmin(isAdmin, isSelf) {
+		if (!isAdmin && !isSelf) {
+			throw new Error('[[user:change-password-error-privileges]]');
+		}
+	}
+
+	async function checkSelf(data, isSelf, hasPassword) {
+		if (isSelf && hasPassword) {
+			const correct = await User.isPasswordCorrect(data.uid, data.currentPassword, data.ip);
+			if (!correct) {
+				throw new Error('[[user:change-password-error-wrong-current]]');
+			}
+			if (data.currentPassword === data.newPassword) {
+				throw new Error('[[user:change-password-error-same-password]]');
+			}
+		}
+	}
 };
