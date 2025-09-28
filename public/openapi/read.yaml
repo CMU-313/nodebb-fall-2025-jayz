@@ -148,6 +148,9 @@ paths:
     $ref: "read/admin/manage/uploads.yaml"
   /api/admin/manage/digest:
     $ref: "read/admin/manage/digest.yaml"
+
+  /api/admin/manage/polls:
+    $ref: "read/admin/manage/polls.yaml"
   "/api/admin/appearance/themes":
     $ref: "read/admin/appearance/themes.yaml"
   "/api/admin/appearance/skins":
@@ -370,7 +373,9 @@ paths:
     $ref: "read/ap.yaml"
   /api/outgoing:
     $ref: "read/outgoing.yaml"
+
   /api/polls/{id}:
     $ref: "read/api/polls/id.yaml"
   /api/polls/{id}/results:
     $ref: "read/api/polls/id/results.yaml"
+
