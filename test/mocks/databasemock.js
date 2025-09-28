@@ -127,6 +127,18 @@ winston.info('database config %s', dbType, testDbConfig);
 winston.info(`environment ${global.env}`);
 
 const db = require('../../src/database');
+const Plugins = require('../../src/plugins');
+
+// During tests, stub out actual email sending to avoid depending on sendmail
+// or external SMTP services. Tests can still register their own hooks to
+// assert email payloads if needed. This no-op static hook prevents
+// Emailer.sendToEmail from falling back to the sendmail transport.
+try {
+	Plugins.hooks.register('test-emailer', { hook: 'static:email.send', method: async (data) => { /* no-op during tests */ } });
+} catch (e) {
+	// If registering fails for any reason, ignore — tests will run and
+	// may still override this behavior per-suite.
+}
 
 module.exports = db;
 

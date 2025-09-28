@@ -3,6 +3,7 @@
 const express = require('express');
 
 const uploadsController = require('../controllers/uploads');
+const pollsController = require('../controllers/polls');
 const helpers = require('./helpers');
 
 module.exports = function (app, middleware, controllers) {
@@ -42,4 +43,10 @@ module.exports = function (app, middleware, controllers) {
 		middleware.canViewUsers,
 		middleware.checkAccountPermissions,
 	], helpers.tryRoute(controllers.accounts.edit.uploadPicture));
+
+	// Polls API
+	router.post('/polls', [...middlewares, middleware.ensureLoggedIn, middleware.applyCSRF], helpers.tryRoute(pollsController.create));
+	router.get('/polls/:id', [...middlewares], helpers.tryRoute(pollsController.get));
+	router.post('/polls/:id/vote', [...middlewares, middleware.ensureLoggedIn, middleware.applyCSRF], helpers.tryRoute(pollsController.vote));
+	router.get('/polls/:id/results', [...middlewares], helpers.tryRoute(pollsController.results));
 };
