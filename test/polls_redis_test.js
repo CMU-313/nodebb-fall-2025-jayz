@@ -24,9 +24,9 @@ describe('Redis Polls (integration)', function () {
 		await Groups.join('administrators', adminUID1);
 		console.log('Created admin with UID:', adminUID1);
 		// Create a poll
-		const pollId = await Polls.createPoll('What is your favorite color?', 1, { multi: false });
+		const pollId = await Polls.createPoll('What is your favorite color?', adminUID1, { multi: false });
 		createdPollId = pollId;
-		console.log('Created poll id:', pollId);
+		console.log('SUCCESS: Created poll id:', pollId);
 
 		// Create Regular userID 
 		const user1 = await User.create({
@@ -44,9 +44,6 @@ describe('Redis Polls (integration)', function () {
 		});
 		console.log('Created user with UID:', user2);
 
-		// Attempt Poll Creation with ADMIN
-		const pollId = await Polls.createPoll('What is your favorite color?', adminUID1, { multi: false });
-		console.log('SUCCESS: Created poll id:', pollId);
 
 		// Attempt Poll Creation with USER
 		try {
