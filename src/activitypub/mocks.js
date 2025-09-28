@@ -241,6 +241,7 @@ Mocks.profile = async (actors) => {
 			userslug: `${preferredUsername}@${hostname}`,
 			displayname: name,
 			fullname: name,
+			nickname: name,
 			joindate: new Date(published).getTime() || Date.now(),
 			picture,
 			status: 'offline',
@@ -418,7 +419,7 @@ Mocks.actors = {};
 
 Mocks.actors.user = async (uid) => {
 	const userData = await user.getUserData(uid);
-	let { username, userslug, displayname, fullname, joindate, aboutme, picture, 'cover:url': cover } = userData;
+	let { username, userslug, displayname, nickname, joindate, aboutme, picture, 'cover:url': cover } = userData;
 	let fields = await accountHelpers.getCustomUserFields(0, userData);
 	const publicKey = await activitypub.getPublicKey('uid', uid);
 
@@ -495,7 +496,7 @@ Mocks.actors.user = async (uid) => {
 		outbox: `${nconf.get('url')}/uid/${uid}/outbox`,
 
 		type: 'Person',
-		name: username !== displayname ? fullname : username, // displayname is escaped, fullname is not
+		name: username !== displayname ? nickname : username, // displayname is escaped, fullname is not
 		preferredUsername: userslug,
 		summary: aboutmeParsed,
 		icon: picture,
