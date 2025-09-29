@@ -92,8 +92,8 @@ describe('Redis Polls (integration)', function () {
 
 		// Simulate valid votes
 		await Polls.vote(pollId, 'uid:1', opt1);
-		await Polls.vote(pollId, 'uid:1', opt2);
-		await Polls.vote(pollId, 'uid:1', opt1);
+		await Polls.vote(pollId, 'uid:2', opt2);
+		await Polls.vote(pollId, 'uid:3', opt1);
 
 		//Try voting with invalid user ID
 		try {
