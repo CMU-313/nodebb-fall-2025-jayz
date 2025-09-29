@@ -1,6 +1,8 @@
 'use strict';
 
 const db = require('../database');
+const privileges = require('../privileges');
+const User = require('../user');
 
 /**
  * Redis-backed Polls implementation
@@ -16,6 +18,17 @@ const db = require('../database');
 const Polls = {};
 
 Polls.createPoll = async function (title, instructorUid = null, settings = {}) {
+	// Check if UserID is valid
+	if (!instructorUid || !(await User.exists(instructorUid))) {
+		throw new Error('[[error:invalid-uid]]');
+	}
+	// Check if user is admin
+	const isAdmin = await privileges.users.isAdministrator(instructorUid);
+	if (!isAdmin) {
+		throw new Error('[[error:no-privileges]]');
+	}
+ 
+
 	const pollId = await db.increment('poll:next_id');
 	const key = `poll:${pollId}`;
 	const now = Date.now();
@@ -34,7 +47,23 @@ Polls.createPoll = async function (title, instructorUid = null, settings = {}) {
 	return pollId;
 };
 
-Polls.addOption = async function (pollId, text, sort = 0) {
+Polls.addOption = async function (instructorUid, pollId, text, sort = 0) {
+	// Check if UserID is valid
+	if (!instructorUid || !(await User.exists(instructorUid))) {
+		throw new Error('[[error:invalid-uid]]');
+	}
+
+	// Check if user is admin
+	const isAdmin = await privileges.users.isAdministrator(instructorUid);
+	if (!isAdmin) {
+		throw new Error('[[error:no-privileges]]');
+	}
+ 
+	//Check if PollID exists, throw error if not
+	const pollKey = `poll:${pollId}`;
+	const pollObj = await db.getObject(pollKey);
+	if (!pollObj) throw new Error('[[error:invalid-pollid]]');
+
 	const optionId = await db.increment('poll:option:next_id');
 	const key = `poll:option:${optionId}`;
 	const obj = {
@@ -52,7 +81,10 @@ Polls.addOption = async function (pollId, text, sort = 0) {
 Polls.getPoll = async function (pollId) {
 	const key = `poll:${pollId}`;
 	const pollObj = await db.getObject(key);
-	if (!pollObj) return null;
+
+	//If invalid Poll, throw poll ID error
+	if (!pollObj) throw new Error('[[error:invalid-pollid]]');
+
 	const optionIds = await db.getListRange(`poll:${pollId}:options`, 0, -1) || [];
 	const optionKeys = optionIds.map(id => `poll:option:${id}`);
 	const options = optionKeys.length ? await db.getObjects(optionKeys) : [];
@@ -62,15 +94,63 @@ Polls.getPoll = async function (pollId) {
 };
 
 Polls.vote = async function (pollId, uid, optionId) {
+	const ruid = parseInt(uid.replace('uid:', ''), 10);
+	// Check if UserID is valid to Vote
+	if (!ruid || !(await User.exists(ruid))) {
+		throw new Error('[[error:invalid-uid]]');
+	}
+
+	//Check if PollID exists, throw error if not
+	const pollKey = `poll:${pollId}`;
+	const pollObj = await db.getObject(pollKey);
+	if (!pollObj) throw new Error('[[error:invalid-pollid]]');
+	
 	// Single-choice polls store uid->optionId in a hash
 	const responsesKey = `poll:${pollId}:responses`;
-	await db.setObjectField(responsesKey, uid, optionId);
-	// increment option vote counter
-	await db.increment(`poll:${pollId}:option:${optionId}:votes`);
+	const votesKey = optId => `poll:${pollId}:option:${optId}:votes`;
+
+	// Read previous vote (if any)
+	const prev = await db.getObjectField(responsesKey, uid);
+	if (prev && String(prev) === String(optionId)) {
+		// idempotent: same vote, nothing to do
+		return true;
+	}
+
+	// Perform an atomic transaction: set new response, increment new option votes,
+	// and decrement previous option votes if present.
+	// We use the underlying redis client MULTI/EXEC via db.client
+	// The db adapter exposes the redis client at db.client
+	const { client } = db;
+	if (!client || !client.multi) {
+		// Fallback to non-atomic behaviour if transaction isn't available
+		await db.setObjectField(responsesKey, uid, optionId);
+		await db.increment(votesKey(optionId));
+		if (prev) {
+			await db.decrObjectField(votesKey(prev), '0');
+		}
+		return true;
+	}
+
+	const multi = client.multi();
+	// set user's response in the responses hash
+	multi.hset(responsesKey, String(uid), String(optionId));
+	// increment the new option's votes
+	multi.incr(votesKey(optionId));
+	// decrement previous option's votes (only if prev exists)
+	if (prev) {
+		multi.decr(votesKey(prev));
+	}
+
+	await multi.exec();
 	return true;
 };
 
 Polls.getResults = async function (pollId) {
+	//Check if PollID exists, throw error if not
+	const pollKey = `poll:${pollId}`;
+	const pollObj = await db.getObject(pollKey);
+	if (!pollObj) throw new Error('[[error:invalid-pollid]]');
+
 	const optionIds = await db.getListRange(`poll:${pollId}:options`, 0, -1) || [];
 	if (!optionIds.length) return [];
 
