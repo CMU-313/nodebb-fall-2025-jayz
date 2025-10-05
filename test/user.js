@@ -743,6 +743,7 @@ describe('User', () => {
 					username: 'updatedUserName',
 					email: 'updatedEmail@me.com',
 					fullname: 'updatedFullname',
+					nickname: 'updatedNickname',
 					groupTitle: 'testGroup',
 					birthday: '01/01/1980',
 					signature: 'nodebb is good',
@@ -754,6 +755,7 @@ describe('User', () => {
 				assert.equal(result.username, 'updatedUserName');
 				assert.equal(result.userslug, 'updatedusername');
 				assert.equal(result.fullname, 'updatedFullname');
+				assert.equal(result.nickname, 'updatedNickname');
 
 				const userData = await db.getObject(`user:${uid}`);
 				Object.keys(data).forEach((key) => {
