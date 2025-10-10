@@ -49,6 +49,9 @@
 				<a class="btn btn-ghost btn-sm text-start" href="{relative_path}/admin/manage/tags">[[admin/menu:manage/tags]]</a>
 				{{{ end }}}
 				{{{ if user.privileges.superadmin }}}
+				<a class="btn btn-ghost btn-sm text-start" href="{relative_path}/admin/manage/polls">[[admin/menu:manage/polls]]</a>
+				{{{ end }}}
+				{{{ if user.privileges.superadmin }}}
 				<a class="btn btn-ghost btn-sm text-start" href="{relative_path}/admin/manage/registration">[[admin/menu:manage/registration]]</a>
 				<a class="btn btn-ghost btn-sm text-start" href="{relative_path}/admin/manage/uploads">[[admin/menu:manage/uploads]]</a>
 				<a class="btn btn-ghost btn-sm text-start" href="{relative_path}/admin/manage/digest">[[admin/menu:manage/digest]]</a>

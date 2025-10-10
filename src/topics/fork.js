@@ -29,14 +29,13 @@ module.exports = function (Topics) {
 		const mainPid = pids[0];
 		const cid = await posts.getCidByPid(mainPid);
 		
-
 		const [mainPost, isAdminOrMod] = await Promise.all([
 			posts.getPostData(mainPid),
 			privileges.categories.isAdminOrMod(cid, uid),
 		]);
-		
-		const fromTid = mainPost.tid;
 
+		const fromTid = mainPost.tid;
+		
 		if (pids.every(isFinite)) {
 			pids.sort((a, b) => a - b);
 		} else {
