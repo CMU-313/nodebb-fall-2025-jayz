@@ -73,6 +73,7 @@ module.exports = function (User) {
 		}
 
 		uids = await filterAndSortUids(uids, data);
+		uids = _.uniq(uids);
 		if (data.hardCap > 0) {
 			uids.length = data.hardCap;
 		}
@@ -115,24 +116,40 @@ module.exports = function (User) {
 		if (!query) {
 			return [];
 		}
+	
 		query = String(query).toLowerCase();
 		const min = query;
-		const max = query.substr(0, query.length - 1) + String.fromCharCode(query.charCodeAt(query.length - 1) + 1);
-
+		const max = query.slice(0, -1) + String.fromCharCode(query.charCodeAt(query.length - 1) + 1);
+	
 		const resultsPerPage = meta.config.userSearchResultsPerPage;
 		hardCap = hardCap || resultsPerPage * 10;
-
-		const data = await db.getSortedSetRangeByLex(`${searchBy}:sorted`, min, max, 0, hardCap);
-		// const uids = data.map(data => data.split(':').pop());
-		const uids = data.map((data) => {
-			if (data.includes(':https:')) {
-				return data.substring(data.indexOf(':https:') + 1);
+	
+		// 🔹 Fields we want to search through
+		const fields = ['username', 'fullname', 'nickname'];
+	
+		// 🔹 Collect results from all sorted sets
+		const allResults = await Promise.all(fields.map(async (field) => {
+			const key = `${field}:sorted`;
+			const exists = await db.exists(key);
+			if (!exists) {
+				return [];
 			}
-
-			return data.split(':').pop();
-		});
+	
+			const data = await db.getSortedSetRangeByLex(key, min, max, 0, hardCap);
+			return data.map((entry) => {
+				if (entry.includes(':https:')) {
+					return entry.substring(entry.indexOf(':https:') + 1);
+				}
+				return entry.split(':').pop();
+			});
+		}));
+	
+		// 🔹 Merge all results, remove duplicates, respect the hardCap limit
+		const uids = [...new Set(allResults.flat())].slice(0, hardCap);
+	
 		return uids;
 	}
+	
 
 	async function filterAndSortUids(uids, data) {
 		uids = uids.filter(uid => parseInt(uid, 10) || activitypub.helpers.isUri(uid));
