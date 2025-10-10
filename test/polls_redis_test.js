@@ -62,7 +62,7 @@ describe('Redis Polls (integration)', function () {
 		// Add options with admin
 		const opt1 = await Polls.addOption(adminUID1, pollId, 'Red', 1);
 		const opt2 = await Polls.addOption(adminUID1, pollId, 'Blue', 2);
-		console.log('SUCESS: Added options with admin:', opt1, opt2);
+		console.log('SUCCESS: Added options with admin:', opt1, opt2);
 
 		// Add options with user
 		try {
