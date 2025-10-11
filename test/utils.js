@@ -562,9 +562,10 @@ describe('Utility Methods', () => {
 			assert.strictEqual(el.find('#search').attr('title'), 'Search');
 		});
 
-		it('should not error', async () => {
-			await shim.flush();
-			await shim.flushNamespace();
+		it('should not error', (done) => {
+			shim.flush();
+			shim.flushNamespace();
+			done();
 		});
 	});
 });
