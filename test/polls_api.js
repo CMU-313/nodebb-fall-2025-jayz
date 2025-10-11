@@ -1,15 +1,12 @@
-
 'use strict';
 
 const assert = require('assert');
-const sinon = require('sinon');
 const request = require('supertest');
 const express = require('express');
+const winston = require('winston');
 
 const pollsController = require('../src/controllers/polls');
 const Polls = require('../src/polls/redis');
-const winston = require('winston');
-
 
 winston.add(new winston.transports.Console({
 	format: winston.format.combine(
@@ -18,16 +15,17 @@ winston.add(new winston.transports.Console({
 	),
 }));
 
-describe('Polls Controller', () => {
+describe('Polls Controller (no sinon)', () => {
 	let app;
-	let sandbox;
+	let originalCreatePoll;
+	let originalAddOption;
+	let originalGetPolls;
 
 	before(() => {
-		// Create an Express app and mount routes
 		app = express();
 		app.use(express.json());
+
 		app.post('/polls', (req, res, next) => {
-			// Simulate an authenticated user
 			req.uid = 1;
 			return pollsController.create(req, res, next);
 		});
@@ -42,11 +40,17 @@ describe('Polls Controller', () => {
 	});
 
 	beforeEach(() => {
-		sandbox = sinon.createSandbox();
+		// Save original functions
+		originalCreatePoll = Polls.createPoll;
+		originalAddOption = Polls.addOption;
+		originalGetPolls = Polls.getPolls;
 	});
 
 	afterEach(() => {
-		sandbox.restore();
+		// Restore originals
+		Polls.createPoll = originalCreatePoll;
+		Polls.addOption = originalAddOption;
+		Polls.getPolls = originalGetPolls;
 	});
 
 	// ----------------------------
@@ -54,7 +58,7 @@ describe('Polls Controller', () => {
 	// ----------------------------
 	it('should create a poll successfully', async () => {
 		const fakePollId = 'poll123';
-		sandbox.stub(Polls, 'createPoll').resolves(fakePollId);
+		Polls.createPoll = async () => fakePollId;
 
 		const res = await request(app)
 			.post('/polls')
@@ -80,7 +84,7 @@ describe('Polls Controller', () => {
 	// ----------------------------
 	it('should add an option successfully', async () => {
 		const fakeOptionId = 'opt789';
-		sandbox.stub(Polls, 'addOption').resolves(fakeOptionId);
+		Polls.addOption = async () => fakeOptionId;
 
 		const res = await request(app)
 			.post('/polls/poll123/options')
@@ -89,6 +93,7 @@ describe('Polls Controller', () => {
 
 		assert.strictEqual(res.body.status.code, 'ok');
 		assert.strictEqual(res.body.response.optionId, fakeOptionId);
+		console.log('THIS PRINTED !!');
 	});
 
 	it('should return 400 if option text is missing', async () => {
@@ -112,7 +117,6 @@ describe('Polls Controller', () => {
 		assert.strictEqual(res.body.status.code, 'ok');
 		assert.strictEqual(res.body.response.pollId, 'poll123');
 		assert.strictEqual(res.body.response.success, true);
-		console.log('THIS RAN !!!!');
 	});
 
 	// ----------------------------
@@ -151,7 +155,7 @@ describe('Polls Controller', () => {
 			{ id: '1', title: 'Favorite food' },
 			{ id: '2', title: 'Best programming language' },
 		];
-		sandbox.stub(Polls, 'getPolls').resolves(fakePolls);
+		Polls.getPolls = async () => fakePolls;
 
 		const res = await request(app)
 			.get('/polls')
