@@ -22,6 +22,7 @@ describe('Polls Controller (reuse users)', function () {
 		const next = (err) => { if (err) throw err; };
 
 		await pollsController.create(req, res, next);
+		console.log('pollsController keys:', Object.keys(pollsController));
 
 		assert.strictEqual(res.statusCode, 200);
 		assert.strictEqual(res.body.status.code, 'ok');
