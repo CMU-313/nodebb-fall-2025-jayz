@@ -21,7 +21,7 @@ describe('Polls Controller (reuse users)', function () {
 		assert.strictEqual(res.statusCode, 200);
 		assert.strictEqual(res.body.status.code, 'ok');
 	});
-});
+
 
 	it('should add an option to a poll', async function () {
 		const req = { params: { id: '1' }, body: { text: 'Option A', sort: 0 }, uid: adminUID1 };
@@ -53,6 +53,6 @@ describe('Polls Controller (reuse users)', function () {
 		assert.ok(res.body.response.results.totalVotes >= 0);
 	});
 
-
+});
 
 
