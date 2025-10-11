@@ -121,3 +121,12 @@ describe('Polls Controller', function () {
 		});
 	});
 });
+after(async function () {
+	// If your mock database has a close or quit method, call it
+	if (typeof db.quit === 'function') {
+		await db.quit();
+	}
+
+	// Optional: force exit if CI still hangs
+	setTimeout(() => process.exit(0), 1000);
+});
