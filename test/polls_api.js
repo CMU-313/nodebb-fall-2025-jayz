@@ -1,0 +1,139 @@
+'use strict';
+
+const winston = require('winston');
+const assert = require('assert');
+
+// Use the same approach as backend tests
+const db = require('./mocks/databasemock');
+const pollsController = require('../src/controllers/polls');
+const Polls = require('../src/polls/redis');
+
+describe('Polls Controller', function () {
+	let req, res, next;
+	let originalCreatePoll, originalAddOption, originalGetPolls;
+	let capturedCalls;
+
+	beforeEach(function () {
+		// Setup request mock
+		req = {
+			body: {},
+			params: {},
+			uid: 1,
+		};
+
+		// Setup response mock
+		const jsonResponse = [];
+		res = {
+			statusCode: 200,
+			status: function (code) {
+				this.statusCode = code;
+				return this;
+			},
+			json: function (data) {
+				jsonResponse.push(data);
+				return this;
+			},
+			_getJson: function () {
+				return jsonResponse[jsonResponse.length - 1];
+			},
+		};
+
+		// Setup next function
+		const nextCalls = [];
+		next = function (err) {
+			nextCalls.push(err);
+		};
+		next._getCalls = function () {
+			return nextCalls;
+		};
+
+		// Store original methods and setup capture
+		capturedCalls = {};
+		
+		originalCreatePoll = Polls.createPoll;
+		Polls.createPoll = function (...args) {
+			capturedCalls.createPoll = args;
+			return Promise.resolve(1);
+		};
+
+		originalAddOption = Polls.addOption;
+		Polls.addOption = function (...args) {
+			capturedCalls.addOption = args;
+			return Promise.resolve(5);
+		};
+
+		originalGetPolls = Polls.getPolls;
+		Polls.getPolls = function (...args) {
+			capturedCalls.getPolls = args;
+			return Promise.resolve([{ id: 1, title: 'Poll 1' }]);
+		};
+	});
+
+	afterEach(function () {
+		// Restore original methods
+		Polls.createPoll = originalCreatePoll;
+		Polls.addOption = originalAddOption;
+		Polls.getPolls = originalGetPolls;
+	});
+
+    // Tests successful poll creation with valid title and settings
+	describe('create', function () {
+		it('should create a poll successfully', async function () {
+			req.body = { title: 'Test Poll', settings: { multi: false } };
+
+			await pollsController.create(req, res, next);
+
+			const response = res._getJson();
+			console.log('Response:', response);
+			console.log('Captured calls:', capturedCalls.createPoll);
+			assert.strictEqual(response.status.code, 'ok');
+			assert.strictEqual(response.response.pollId, 1);
+			assert.deepStrictEqual(capturedCalls.createPoll, ['Test Poll', 1, { multi: false }]);
+		});
+
+        // Test that poll creation handles missing settings by defaulting to empty object
+		it('should handle missing settings', async function () {
+			req.body = { title: 'Test Poll' };
+
+			await pollsController.create(req, res, next);
+
+			const response = res._getJson();
+			console.log('Response with default settings:', response);
+			console.log('Captured calls:', capturedCalls.createPoll);
+			assert.strictEqual(response.status.code, 'ok');
+			assert.deepStrictEqual(capturedCalls.createPoll, ['Test Poll', 1, {}]);
+		});
+        // Test that missing poll title returns 400 error
+		it('should return 400 when title is missing', async function () {
+			req.body = { settings: {} };
+
+			await pollsController.create(req, res, next);
+
+			console.log('Status code:', res.statusCode);
+			const response = res._getJson();
+			console.log('Error response:', response);
+			assert.strictEqual(res.statusCode, 400);
+			assert.strictEqual(response.status.code, 'error');
+			assert(response.status.message.includes('required'));
+		});
+        // Test that errors thrown during createPoll are passed to next error handler
+		it('should call next on error', async function () {
+			req.body = { title: 'Test Poll' };
+			const error = new Error('Database error');
+			
+			Polls.createPoll = function () {
+				return Promise.reject(error);
+			};
+
+			await pollsController.create(req, res, next);
+
+			const calls = next._getCalls();
+			console.log('next() calls:', calls.length);
+			console.log('Error passed to next():', calls[0]);
+			assert.strictEqual(calls.length, 1);
+			assert.strictEqual(calls[0], error);
+		});
+	});
+    
+
+});
