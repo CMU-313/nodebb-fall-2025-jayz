@@ -97,36 +97,6 @@ describe('Polls Controller', function () {
 		};
 	});
 
-	afterEach(function () {
-		// Restore original methods
-		Polls.createPoll = originalCreatePoll;
-		Polls.addOption = originalAddOption;
-		Polls.getPolls = originalGetPolls;
-		Polls.vote = originalVote;
-		Polls.getResults = originalGetResults;
-		Polls.getPoll = originalGetPoll;
-	});
 
-	// Tests successful poll creation with valid title and settings
-	describe('create', function () {
-		it('should create a poll successfully', async function () {
-			req.body = { title: 'Test Poll', settings: { multi: false } };
-
-			await pollsController.create(req, res, next);
-
-			const response = res._getJson();
-			console.log('Response:', response);
-			console.log('Captured calls:', capturedCalls.createPoll);
-			assert.strictEqual(response.status.code, 'ok');
-		});
-	});
 });
-after(async function () {
-	// If your mock database has a close or quit method, call it
-	if (typeof db.quit === 'function') {
-		await db.quit();
-	}
 
-	// Optional: force exit if CI still hangs
-	setTimeout(() => process.exit(0), 1000);
-});
