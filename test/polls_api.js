@@ -76,7 +76,7 @@ describe('Polls Controller', function () {
 		Polls.getPolls = originalGetPolls;
 	});
 
-    // Tests successful poll creation with valid title and settings
+	// Tests successful poll creation with valid title and settings
 	describe('create', function () {
 		it('should create a poll successfully', async function () {
 			req.body = { title: 'Test Poll', settings: { multi: false } };
@@ -91,7 +91,7 @@ describe('Polls Controller', function () {
 			assert.deepStrictEqual(capturedCalls.createPoll, ['Test Poll', 1, { multi: false }]);
 		});
 
-        // Test that poll creation handles missing settings by defaulting to empty object
+		// Test that poll creation handles missing settings by defaulting to empty object
 		it('should handle missing settings', async function () {
 			req.body = { title: 'Test Poll' };
 
@@ -103,7 +103,7 @@ describe('Polls Controller', function () {
 			assert.strictEqual(response.status.code, 'ok');
 			assert.deepStrictEqual(capturedCalls.createPoll, ['Test Poll', 1, {}]);
 		});
-        // Test that missing poll title returns 400 error
+		// Test that missing poll title returns 400 error
 		it('should return 400 when title is missing', async function () {
 			req.body = { settings: {} };
 
@@ -116,7 +116,7 @@ describe('Polls Controller', function () {
 			assert.strictEqual(response.status.code, 'error');
 			assert(response.status.message.includes('required'));
 		});
-        // Test that errors thrown during createPoll are passed to next error handler
+		// Test that errors thrown during createPoll are passed to next error handler
 		it('should call next on error', async function () {
 			req.body = { title: 'Test Poll' };
 			const error = new Error('Database error');
@@ -134,9 +134,9 @@ describe('Polls Controller', function () {
 			assert.strictEqual(calls[0], error);
 		});
 	});
-    // Tests for adding options to existing polls
+	// Tests for adding options to existing polls
 	describe('addOption', function () {
-        // Test successful option addition with specific text and sort order
+		// Test successful option addition with specific text and sort order
 		it('should add option successfully', async function () {
 			req.params = { id: '1' };
 			req.body = { text: 'Option A', sort: 1 };
@@ -151,7 +151,7 @@ describe('Polls Controller', function () {
 			assert.deepStrictEqual(capturedCalls.addOption, [1, '1', 'Option A', 1]);
 		});
 
-        // Test that missing option text returns 400 error
+		// Test that missing option text returns 400 error
 		it('should return 400 when text is missing', async function () {
 			req.params = { id: '1' };
 			req.body = { sort: 1 };
@@ -163,7 +163,7 @@ describe('Polls Controller', function () {
 			assert.strictEqual(response.status.code, 'error');
 			assert(response.status.message.includes('required'));
 		});
-        // Test that errors thrown during addOption are passed to next error handler
+		// Test that errors thrown during addOption are passed to next error handler
 		it('should call next on error', async function () {
 			req.params = { id: '1' };
 			req.body = { text: 'Option A' };
@@ -182,9 +182,9 @@ describe('Polls Controller', function () {
 			assert.strictEqual(calls[0], error);
 		});
 	});
-    // Tests for voting on polls
+	// Tests for voting on polls
 	describe('vote', function () {
-        // Test that voting returns success response
+		// Test that voting returns success response
 		it('should return success', async function () {
 			req.params = { id: '1' };
 
@@ -197,7 +197,7 @@ describe('Polls Controller', function () {
 			assert.strictEqual(response.response.success, true);
 		});
 
-        // Test that errors during vote response are passed to next error handler
+		// Test that errors during vote response are passed to next error handler
 		it('should call next on error', async function () {
 			req.params = { id: '1' };
 			const error = new Error('Vote error');
@@ -216,9 +216,9 @@ describe('Polls Controller', function () {
 		});
 	});
 
-    // Tests for retrieving poll results
+	// Tests for retrieving poll results
 	describe('results', function () {
-        // Test that results return valid mock data including options array and total votes count
+		// Test that results return valid mock data including options array and total votes count
 		it('should return mock results', async function () {
 			req.params = { id: '1' };
 
@@ -233,7 +233,7 @@ describe('Polls Controller', function () {
 			assert.strictEqual(response.response.results.totalVotes, 10);
 		});
 
-        // Test that errors in results cause next to be called with the error
+		// Test that errors in results cause next to be called with the error
 		it('should call next on error', async function () {
 			req.params = { id: '1' };
 			const error = new Error('Results error');
@@ -251,9 +251,9 @@ describe('Polls Controller', function () {
 		});
 	});
 
-    // Tests for retrieving a single poll
+	// Tests for retrieving a single poll
 	describe('get', function () {
-        // Test that a single poll is returned with expected id, title and options array
+		// Test that a single poll is returned with expected id, title and options array
 		it('should return mock poll', async function () {
 			req.params = { id: '1' };
 
@@ -268,7 +268,7 @@ describe('Polls Controller', function () {
 			assert(Array.isArray(response.response.poll.options));
 		});
 
-        // Test that errors in getting the poll are passed to next error handler
+		// Test that errors in getting the poll are passed to next error handler
 		it('should call next on error', async function () {
 			req.params = { id: '1' };
 			const error = new Error('Get error');
