@@ -169,4 +169,25 @@ Polls.getResults = async function (pollId) {
 	return results;
 };
 
+Polls.getPolls = async function () {
+	// Get all poll IDs from the sorted set
+	const pollIds = await db.getSortedSetRevRange('poll:ids', 0, -1);
+	if (!pollIds.length) return [];
+	
+	// Get all poll objects
+	const pollKeys = pollIds.map(id => `poll:${id}`);
+	const polls = await db.getObjects(pollKeys);
+	
+	// Parse settings for each poll
+	return polls.map((poll) => {
+		if (!poll) return null;
+		try {
+			poll.settings = JSON.parse(poll.settings || '{}');
+		} catch (e) {
+			poll.settings = {};
+		}
+		return poll;
+	}).filter(Boolean);
+};
+
 module.exports = Polls;
