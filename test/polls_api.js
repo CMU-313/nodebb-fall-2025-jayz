@@ -24,13 +24,13 @@ describe('Polls Controller (reuse users)', function () {
 });
 
 	it('should add an option to a poll', async function () {
-		const req = { params: { id: savedPollId }, body: { text: 'Option A', sort: 0 }, uid: adminUID1 };
+		const req = { params: { id: '1' }, body: { text: 'Option A', sort: 0 }, uid: adminUID1 };
 		const res = makeRes();
 		const next = (err) => { if (err) throw err; };
 	});
 
 	it('should vote on a poll', async function () {
-		const req = { params: { id: savedPollId }, body: {}, uid: user1 };
+		const req = { params: { id: '1' }, body: {}, uid: user1 };
 		const res = makeRes();
 		const next = (err) => { if (err) throw err; };
 
@@ -42,7 +42,7 @@ describe('Polls Controller (reuse users)', function () {
 	});
 
 	it('should get poll results', async function () {
-		const req = { params: { id: savedPollId } };
+		const req = { params: { id: '1' } };
 		const res = makeRes();
 		const next = (err) => { if (err) throw err; };
 
@@ -54,5 +54,5 @@ describe('Polls Controller (reuse users)', function () {
 	});
 
 
-});
+
 
