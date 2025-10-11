@@ -195,61 +195,7 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-	const addOptionBtn = document.getElementById('add-option');
-	const optionsContainer = document.getElementById('poll-options-container');
-	const savePollBtn = document.getElementById('save-poll');
-	let optionCount = 2;
-
-	// Add new poll option
-	addOptionBtn.addEventListener('click', function() {
-		optionCount++;
-		const optionHtml = `
-			<div class="poll-option-item d-flex gap-2 mb-2">
-				<input type="text" class="form-control poll-option" placeholder="[[admin/manage/polls:option-placeholder]] ${optionCount}" required>
-				<button type="button" class="btn btn-outline-danger btn-sm remove-option">
-					<i class="fa fa-times"></i>
-				</button>
-			</div>
-		`;
-		optionsContainer.insertAdjacentHTML('beforeend', optionHtml);
-		updateRemoveButtons();
-	});
-
-	// Remove poll option
-	optionsContainer.addEventListener('click', function(e) {
-		if (e.target.classList.contains('remove-option') || e.target.parentElement.classList.contains('remove-option')) {
-			const optionItem = e.target.closest('.poll-option-item');
-			optionItem.remove();
-			updateRemoveButtons();
-		}
-	});
-
-	// Update remove button states
-	function updateRemoveButtons() {
-		const options = document.querySelectorAll('.poll-option-item');
-		const removeButtons = document.querySelectorAll('.remove-option');
-		
-		removeButtons.forEach(btn => {
-			btn.disabled = options.length <= 2;
-		});
-	}
-
-	// Save poll (placeholder functionality)
-	savePollBtn.addEventListener('click', function() {
-		const form = document.getElementById('create-poll-form');
-		if (form.checkValidity()) {
-			// In a real implementation, this would send data to the server
-			alert('Poll creation functionality would be implemented here');
-			// Close modal
-			const modal = bootstrap.Modal.getInstance(document.getElementById('create-poll-modal'));
-			modal.hide();
-		} else {
-			form.reportValidity();
-		}
-	});
-
-	// Initialize remove button states
-	updateRemoveButtons();
+require(['admin/manage/polls'], function (polls) {
+	polls.init();
 });
 </script>

@@ -1,6 +1,7 @@
 'use strict';
 
 const winston = require('winston');
+const Polls = require('../polls/redis');
 
 const pollsController = module.exports;
 
@@ -12,9 +13,22 @@ const pollsController = module.exports;
  */
 pollsController.create = async function (req, res, next) {
 	try {
-		// This is a stub implementation to make tests pass
-		// In a real implementation, we would create a poll in the database
-		const pollId = Date.now().toString();
+		const { title, settings } = req.body;
+		
+		if (!title) {
+			return res.status(400).json({
+				status: {
+					code: 'error',
+					message: 'Poll title is required',
+				},
+			});
+		}
+		
+		// Use the current user's UID
+		const { uid } = req;
+		
+		// Create the poll using the Redis implementation
+		const pollId = await Polls.createPoll(title, uid, settings || {});
 		
 		res.json({
 			status: {
@@ -55,6 +69,47 @@ pollsController.vote = async function (req, res, next) {
 		});
 	} catch (err) {
 		winston.error(`[controllers/polls] Error voting on poll: ${err.message}`);
+		next(err);
+	}
+};
+
+/**
+ * Add an option to a poll
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
+pollsController.addOption = async function (req, res, next) {
+	try {
+		const { id: pollId } = req.params;
+		const { text, sort = 0 } = req.body;
+		
+		if (!text) {
+			return res.status(400).json({
+				status: {
+					code: 'error',
+					message: 'Option text is required',
+				},
+			});
+		}
+		
+		// Use the current user's UID
+		const { uid } = req;
+		
+		// Add the option using the Redis implementation
+		const optionId = await Polls.addOption(uid, pollId, text, sort);
+		
+		res.json({
+			status: {
+				code: 'ok',
+				message: 'OK',
+			},
+			response: {
+				optionId: optionId,
+			},
+		});
+	} catch (err) {
+		winston.error(`[controllers/polls] Error adding option to poll: ${err.message}`);
 		next(err);
 	}
 };
@@ -137,6 +192,32 @@ pollsController.get = async function (req, res, next) {
 		});
 	} catch (err) {
 		winston.error(`[controllers/polls] Error getting poll: ${err.message}`);
+		next(err);
+	}
+};
+
+/**
+ * List all polls
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
+pollsController.list = async function (req, res, next) {
+	try {
+		// Fetch all polls from the database
+		const polls = await Polls.getPolls();
+		
+		res.json({
+			status: {
+				code: 'ok',
+				message: 'OK',
+			},
+			response: {
+				polls: polls,
+			},
+		});
+	} catch (err) {
+		winston.error(`[controllers/polls] Error listing polls: ${err.message}`);
 		next(err);
 	}
 };
