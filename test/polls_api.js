@@ -1,7 +1,9 @@
 'use strict';
+console.log('HERE1');
 
 const assert = require('assert');
 const Polls = require('../src/polls/redis');
+console.log('HERE2');
 
 // ----------------------------
 // MOCK POLLS METHODS
@@ -12,8 +14,10 @@ Polls.getPolls = async () => [
 	{ id: '1', title: 'Favorite food' },
 	{ id: '2', title: 'Best programming language' },
 ];
+console.log('HERE3');
 
 const pollsController = require('../src/controllers/polls');
+console.log('HERE4');
 
 // ----------------------------
 // HELPER RES OBJECT
@@ -26,17 +30,21 @@ function makeRes() {
 	res.json = function (data) { this.body = data; return this; };
 	return res;
 }
+console.log('HERE5');
 
 // ----------------------------
 // TESTS
 // ----------------------------
 describe('Polls Controller (unit tests only)', () => {
+	console.log('HERE6');
 
 	it('should create a poll successfully', async () => {
 		const req = { body: { title: 'Favorite color?' }, uid: 1 };
 		const res = makeRes();
 		const next = (err) => {
 			if (err) throw err; };
+		
+		console.log('HERE7');
 
 		await pollsController.create(req, res, next);
 
