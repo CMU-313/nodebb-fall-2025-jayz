@@ -1,0 +1,48 @@
+get:
+  tags:
+    - polls
+  summary: Get all polls
+  description: Retrieves a list of all polls
+  responses:
+    "200":
+      description: Polls retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: "../../components/schemas/Status.yaml#/Status"
+              response:
+                type: object
+                properties:
+                  polls:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        poll_id:
+                          type: string
+                          description: Unique identifier for the poll
+                        title:
+                          type: string
+                          description: Title of the poll
+                        instructor_uid:
+                          type: string
+                          nullable: true
+                          description: User ID of the poll creator
+                        settings:
+                          type: object
+                          description: Poll settings
+                        created_at:
+                          type: number
+                          description: Timestamp when the poll was created
+                        updated_at:
+                          type: number
+                          description: Timestamp when the poll was last updated
+    "404":
+      description: Not found
+    "403":
+      description: Not authorized
+  security:
+    - Bearer: []

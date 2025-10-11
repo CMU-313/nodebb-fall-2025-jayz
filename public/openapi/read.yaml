@@ -119,7 +119,7 @@ paths:
   /api/admin/settings/web-crawler:
     $ref: "read/admin/settings/web-crawler.yaml"
   /api/admin/settings/advanced:
-    $ref: "read/admin/settings/advanced.yaml"
+    $ref: "read/admin/settings/advanced.yaml" 
   /api/admin/manage/categories:
     $ref: "read/admin/manage/categories.yaml"
   "/api/admin/manage/categories/{category_id}":
@@ -128,7 +128,7 @@ paths:
     $ref: "read/admin/manage/categories/category_id/analytics.yaml"
   "/api/admin/manage/categories/{category_id}/federation":
     $ref: "read/admin/manage/categories/category_id/federation.yaml"
-  "/api/admin/manage/privileges/{cid}":
+  "/api/admin/manage/privileges/{cid}": 
     $ref: "read/admin/manage/privileges/cid.yaml"
   /api/admin/manage/tags:
     $ref: "read/admin/manage/tags.yaml"
@@ -374,6 +374,8 @@ paths:
   /api/outgoing:
     $ref: "read/outgoing.yaml"
 
+  /api/polls:
+    $ref: "read/api/polls.yaml"
   /api/polls/{id}:
     $ref: "read/api/polls/id.yaml"
   /api/polls/{id}/results:
