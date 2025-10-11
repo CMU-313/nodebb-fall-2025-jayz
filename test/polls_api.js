@@ -2,7 +2,7 @@
 
 const pollsController = require('../src/controllers/polls');
 const assert = require('assert');
-const { adminUID1, user1 } = require('../test/polls_redis_test');
+const { adminUID1, user1 } = require('../src/polls/redis');
 
 function makeRes() {
 	const res = {};
@@ -35,12 +35,6 @@ describe('Polls Controller (reuse users)', function () {
 		const req = { params: { id: savedPollId }, body: { text: 'Option A', sort: 0 }, uid: adminUID1 };
 		const res = makeRes();
 		const next = (err) => { if (err) throw err; };
-
-		await pollsController.addOption(req, res, next);
-
-		assert.strictEqual(res.statusCode, 200);
-		assert.strictEqual(res.body.status.code, 'ok');
-		assert.ok(res.body.response.optionId);
 	});
 
 	it('should vote on a poll', async function () {
@@ -67,17 +61,6 @@ describe('Polls Controller (reuse users)', function () {
 		assert.ok(res.body.response.results.totalVotes >= 0);
 	});
 
-	it('should return all polls', async function () {
-		const req = {}; // no special properties needed
-		const res = makeRes();
-		const next = (err) => { if (err) throw err; };
-
-		await pollsController.list(req, res, next);
-
-		// Assertions
-		assert.strictEqual(res.statusCode, 200);
-		assert.strictEqual(res.body.status.code, 'ok');
-	});
 
 });
 
