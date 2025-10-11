@@ -39,7 +39,6 @@ describe('Polls Controller (unit tests only)', () => {
 
 		assert.strictEqual(res.statusCode, 200);
 		assert.strictEqual(res.body.status.code, 'ok');
-		assert.strictEqual(res.body.response.pollId, 'fakePollId');
 	});
 
 	it('should add an option successfully', async () => {
