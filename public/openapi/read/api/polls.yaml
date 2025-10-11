@@ -40,6 +40,8 @@ get:
                         updated_at:
                           type: number
                           description: Timestamp when the poll was last updated
+    "404":
+      description: Not found
     "403":
       description: Not authorized
   security:
