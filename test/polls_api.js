@@ -1,7 +1,6 @@
 'use strict';
 
 const assert = require('assert');
-const pollsController = require('../src/controllers/polls');
 const Polls = require('../src/polls/redis');
 
 // ----------------------------
@@ -13,6 +12,8 @@ Polls.getPolls = async () => [
 	{ id: '1', title: 'Favorite food' },
 	{ id: '2', title: 'Best programming language' },
 ];
+
+const pollsController = require('../src/controllers/polls');
 
 // ----------------------------
 // HELPER RES OBJECT
@@ -39,10 +40,12 @@ describe('Polls Controller (unit tests only)', () => {
 
 		assert.strictEqual(res.statusCode, 200);
 		assert.strictEqual(res.body.status.code, 'ok');
+		assert.strictEqual(res.body.response.pollId, 'fakePollId');
+		console.log('passed this and still timed out');
 	});
 
 	it('should add an option successfully', async () => {
-		const req = { params: { id: 'poll123' }, body: { text: 'Blue' }, uid: 1 };
+		const req = { params: { id: '123' }, body: { text: 'Blue' }, uid: 1 };
 		const res = makeRes();
 
 		await pollsController.addOption(req, res, () => {});
