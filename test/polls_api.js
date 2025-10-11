@@ -134,6 +134,156 @@ describe('Polls Controller', function () {
 			assert.strictEqual(calls[0], error);
 		});
 	});
-    
+    // Tests for adding options to existing polls
+	describe('addOption', function () {
+        // Test successful option addition with specific text and sort order
+		it('should add option successfully', async function () {
+			req.params = { id: '1' };
+			req.body = { text: 'Option A', sort: 1 };
+
+			await pollsController.addOption(req, res, next);
+
+			const response = res._getJson();
+			console.log('Add option response:', response);
+			console.log('Captured calls:', capturedCalls.addOption);
+			assert.strictEqual(response.status.code, 'ok');
+			assert.strictEqual(response.response.optionId, 5);
+			assert.deepStrictEqual(capturedCalls.addOption, [1, '1', 'Option A', 1]);
+		});
+
+        // Test that missing option text returns 400 error
+		it('should return 400 when text is missing', async function () {
+			req.params = { id: '1' };
+			req.body = { sort: 1 };
+
+			await pollsController.addOption(req, res, next);
+
+			assert.strictEqual(res.statusCode, 400);
+			const response = res._getJson();
+			assert.strictEqual(response.status.code, 'error');
+			assert(response.status.message.includes('required'));
+		});
+        // Test that errors thrown during addOption are passed to next error handler
+		it('should call next on error', async function () {
+			req.params = { id: '1' };
+			req.body = { text: 'Option A' };
+			const error = new Error('Database error');
+			
+			Polls.addOption = function () {
+				return Promise.reject(error);
+			};
+
+			await pollsController.addOption(req, res, next);
+
+			const calls = next._getCalls();
+			console.log('addOption error - next() calls:', calls.length);
+			console.log('Error:', calls[0]);
+			assert.strictEqual(calls.length, 1);
+			assert.strictEqual(calls[0], error);
+		});
+	});
+    // Tests for voting on polls
+	describe('vote', function () {
+        // Test that voting returns success response
+		it('should return success', async function () {
+			req.params = { id: '1' };
+
+			await pollsController.vote(req, res, next);
+
+			const response = res._getJson();
+			console.log('Vote response:', response);
+			assert.strictEqual(response.status.code, 'ok');
+			assert.strictEqual(response.response.pollId, '1');
+			assert.strictEqual(response.response.success, true);
+		});
+
+        // Test that errors during vote response are passed to next error handler
+		it('should call next on error', async function () {
+			req.params = { id: '1' };
+			const error = new Error('Vote error');
+			
+			// Force an error by making res.json throw
+			res.json = function () {
+				throw error;
+			};
+
+			await pollsController.vote(req, res, next);
+
+			const calls = next._getCalls();
+			console.log('Vote error - next() calls:', calls.length);
+			assert.strictEqual(calls.length, 1);
+			assert.strictEqual(calls[0], error);
+		});
+	});
+
+    // Tests for retrieving poll results
+	describe('results', function () {
+        // Test that results return valid mock data including options array and total votes count
+		it('should return mock results', async function () {
+			req.params = { id: '1' };
+
+			await pollsController.results(req, res, next);
+
+			const response = res._getJson();
+			console.log('Results response:', response);
+			assert.strictEqual(response.status.code, 'ok');
+			assert.strictEqual(response.response.pollId, '1');
+			assert(response.response.results);
+			assert(Array.isArray(response.response.results.options));
+			assert.strictEqual(response.response.results.totalVotes, 10);
+		});
+
+        // Test that errors in results cause next to be called with the error
+		it('should call next on error', async function () {
+			req.params = { id: '1' };
+			const error = new Error('Results error');
+			
+			res.json = function () {
+				throw error;
+			};
+
+			await pollsController.results(req, res, next);
+
+			const calls = next._getCalls();
+			console.log('Results error - next() calls:', calls.length);
+			assert.strictEqual(calls.length, 1);
+			assert.strictEqual(calls[0], error);
+		});
+	});
+
+    // Tests for retrieving a single poll
+	describe('get', function () {
+        // Test that a single poll is returned with expected id, title and options array
+		it('should return mock poll', async function () {
+			req.params = { id: '1' };
+
+			await pollsController.get(req, res, next);
+
+			const response = res._getJson();
+			console.log('Get poll response:', response);
+			assert.strictEqual(response.status.code, 'ok');
+			assert(response.response.poll);
+			assert.strictEqual(response.response.poll.id, '1');
+			assert.strictEqual(response.response.poll.title, 'Sample Poll');
+			assert(Array.isArray(response.response.poll.options));
+		});
+
+        // Test that errors in getting the poll are passed to next error handler
+		it('should call next on error', async function () {
+			req.params = { id: '1' };
+			const error = new Error('Get error');
+			
+			res.json = function () {
+				throw error;
+			};
+
+			await pollsController.get(req, res, next);
+
+			const calls = next._getCalls();
+			console.log('Get error - next() calls:', calls.length);
+			assert.strictEqual(calls.length, 1);
+			assert.strictEqual(calls[0], error);
+		});
+	});
 
 });
