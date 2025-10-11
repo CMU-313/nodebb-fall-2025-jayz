@@ -1,6 +1,7 @@
 'use strict';
 
 const winston = require('winston');
+const Polls = require('../polls/redis');
 
 const pollsController = module.exports;
 
@@ -12,9 +13,22 @@ const pollsController = module.exports;
  */
 pollsController.create = async function (req, res, next) {
 	try {
-		// This is a stub implementation to make tests pass
-		// In a real implementation, we would create a poll in the database
-		const pollId = Date.now().toString();
+		const { title, settings } = req.body;
+		
+		if (!title) {
+			return res.status(400).json({
+				status: {
+					code: 'error',
+					message: 'Poll title is required',
+				},
+			});
+		}
+		
+		// Use the current user's UID
+		const { uid } = req;
+		
+		// Create the poll using the Redis implementation
+		const pollId = await Polls.createPoll(title, uid, settings || {});
 		
 		res.json({
 			status: {
@@ -67,11 +81,8 @@ pollsController.vote = async function (req, res, next) {
  */
 pollsController.addOption = async function (req, res, next) {
 	try {
-		// This is a stub implementation to make tests pass
-		// In a real implementation, we would add the option to the poll in the database
-		const pollId = req.params.id;
-		const text = req.body.text;
-		const sort = req.body.sort || 0;
+		const { id: pollId } = req.params;
+		const { text, sort = 0 } = req.body;
 		
 		if (!text) {
 			return res.status(400).json({
@@ -82,9 +93,11 @@ pollsController.addOption = async function (req, res, next) {
 			});
 		}
 		
-		// In a real implementation, we would call Polls.addOption
-		// For now, just generate a mock option ID
-		const optionId = Date.now().toString();
+		// Use the current user's UID
+		const { uid } = req;
+		
+		// Add the option using the Redis implementation
+		const optionId = await Polls.addOption(uid, pollId, text, sort);
 		
 		res.json({
 			status: {
@@ -191,27 +204,8 @@ pollsController.get = async function (req, res, next) {
  */
 pollsController.list = async function (req, res, next) {
 	try {
-		// This is a stub implementation
-		// In a real implementation, we would fetch all polls from the database
-		
-		// Return mock polls
-		const polls = [
-			{
-				id: '1',
-				title: 'Sample Poll 1',
-				created: Date.now() - 86400000, // 1 day ago
-			},
-			{
-				id: '2',
-				title: 'Sample Poll 2',
-				created: Date.now() - 43200000, // 12 hours ago
-			},
-			{
-				id: '3',
-				title: 'Sample Poll 3',
-				created: Date.now(),
-			},
-		];
+		// Fetch all polls from the database
+		const polls = await Polls.getPolls();
 		
 		res.json({
 			status: {
