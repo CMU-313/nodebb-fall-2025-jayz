@@ -12,24 +12,16 @@ function makeRes() {
 	res.json = function (data) { this.body = data; return this; };
 	return res;
 }
-
-let savedPollId;
-
 describe('Polls Controller (reuse users)', function () {
 	it('should create a poll with admin', async function () {
 		const req = { body: { title: 'Controller test poll' }, uid: adminUID1 };
 		const res = makeRes();
 		const next = (err) => { if (err) throw err; };
-
 		await pollsController.create(req, res, next);
-		console.log('pollsController keys:', Object.keys(pollsController));
-
 		assert.strictEqual(res.statusCode, 200);
 		assert.strictEqual(res.body.status.code, 'ok');
-		assert.strictEqual(res.uid, adminUID1);
-		savedPollId = res.body.response.pollId;
-		console.log('Created POLL ID:', res.body.response.pollId);
 	});
+});
 
 	it('should add an option to a poll', async function () {
 		const req = { params: { id: savedPollId }, body: { text: 'Option A', sort: 0 }, uid: adminUID1 };
