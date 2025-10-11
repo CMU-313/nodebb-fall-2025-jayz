@@ -1,57 +1,43 @@
 'use strict';
 
 const assert = require('assert');
-const request = require('supertest');
-const express = require('express');
-const winston = require('winston');
-
 const pollsController = require('../src/controllers/polls');
 const Polls = require('../src/polls/redis');
 
-winston.add(new winston.transports.Console({
-	format: winston.format.combine(
-		winston.format.splat(),
-		winston.format.simple()
-	),
-}));
-
-describe('Polls Controller (no sinon)', () => {
-	let app;
+describe('Polls Controller (unit tests only)', () => {
 	let originalCreatePoll;
 	let originalAddOption;
 	let originalGetPolls;
 
-	before(() => {
-		app = express();
-		app.use(express.json());
-
-		app.post('/polls', (req, res, next) => {
-			req.uid = 1;
-			return pollsController.create(req, res, next);
-		});
-		app.get('/polls', (req, res, next) => pollsController.list(req, res, next));
-		app.get('/polls/:id', (req, res, next) => pollsController.get(req, res, next));
-		app.post('/polls/:id/vote', (req, res, next) => pollsController.vote(req, res, next));
-		app.post('/polls/:id/options', (req, res, next) => {
-			req.uid = 1;
-			return pollsController.addOption(req, res, next);
-		});
-		app.get('/polls/:id/results', (req, res, next) => pollsController.results(req, res, next));
-	});
-
 	beforeEach(() => {
-		// Save original functions
+		// Save original implementations
 		originalCreatePoll = Polls.createPoll;
 		originalAddOption = Polls.addOption;
 		originalGetPolls = Polls.getPolls;
 	});
 
 	afterEach(() => {
-		// Restore originals
+		// Restore originals after each test
 		Polls.createPoll = originalCreatePoll;
 		Polls.addOption = originalAddOption;
 		Polls.getPolls = originalGetPolls;
 	});
+
+	// Helper to simulate Express res object
+	function makeRes() {
+		const res = {};
+		res.statusCode = 200;
+		res.body = null;
+		res.status = function (code) {
+			this.statusCode = code;
+			return this;
+		};
+		res.json = function (data) {
+			this.body = data;
+			return this;
+		};
+		return res;
+	}
 
 	// ----------------------------
 	// CREATE POLL
@@ -60,21 +46,21 @@ describe('Polls Controller (no sinon)', () => {
 		const fakePollId = 'poll123';
 		Polls.createPoll = async () => fakePollId;
 
-		const res = await request(app)
-			.post('/polls')
-			.send({ title: 'Favorite color?' })
-			.expect(200);
+		const req = { body: { title: 'Favorite color?' }, uid: 1 };
+		const res = makeRes();
 
+		await pollsController.create(req, res, () => {});
+		assert.strictEqual(res.statusCode, 200);
 		assert.strictEqual(res.body.status.code, 'ok');
 		assert.strictEqual(res.body.response.pollId, fakePollId);
 	});
 
 	it('should return 400 if title is missing', async () => {
-		const res = await request(app)
-			.post('/polls')
-			.send({})
-			.expect(400);
+		const req = { body: {}, uid: 1 };
+		const res = makeRes();
 
+		await pollsController.create(req, res, () => {});
+		assert.strictEqual(res.statusCode, 400);
 		assert.strictEqual(res.body.status.code, 'error');
 		assert.strictEqual(res.body.status.message, 'Poll title is required');
 	});
@@ -86,22 +72,21 @@ describe('Polls Controller (no sinon)', () => {
 		const fakeOptionId = 'opt789';
 		Polls.addOption = async () => fakeOptionId;
 
-		const res = await request(app)
-			.post('/polls/poll123/options')
-			.send({ text: 'Blue' })
-			.expect(200);
+		const req = { params: { id: 'poll123' }, body: { text: 'Blue' }, uid: 1 };
+		const res = makeRes();
 
+		await pollsController.addOption(req, res, () => {});
+		assert.strictEqual(res.statusCode, 200);
 		assert.strictEqual(res.body.status.code, 'ok');
 		assert.strictEqual(res.body.response.optionId, fakeOptionId);
-		console.log('THIS PRINTED !!');
 	});
 
 	it('should return 400 if option text is missing', async () => {
-		const res = await request(app)
-			.post('/polls/poll123/options')
-			.send({})
-			.expect(400);
+		const req = { params: { id: 'poll123' }, body: {}, uid: 1 };
+		const res = makeRes();
 
+		await pollsController.addOption(req, res, () => {});
+		assert.strictEqual(res.statusCode, 400);
 		assert.strictEqual(res.body.status.code, 'error');
 		assert.strictEqual(res.body.status.message, 'Option text is required');
 	});
@@ -110,10 +95,11 @@ describe('Polls Controller (no sinon)', () => {
 	// VOTE
 	// ----------------------------
 	it('should return ok for voting stub', async () => {
-		const res = await request(app)
-			.post('/polls/poll123/vote')
-			.expect(200);
+		const req = { params: { id: 'poll123' }, uid: 5 };
+		const res = makeRes();
 
+		await pollsController.vote(req, res, () => {});
+		assert.strictEqual(res.statusCode, 200);
 		assert.strictEqual(res.body.status.code, 'ok');
 		assert.strictEqual(res.body.response.pollId, 'poll123');
 		assert.strictEqual(res.body.response.success, true);
@@ -123,10 +109,11 @@ describe('Polls Controller (no sinon)', () => {
 	// GET POLL
 	// ----------------------------
 	it('should get a mock poll by id', async () => {
-		const res = await request(app)
-			.get('/polls/poll42')
-			.expect(200);
+		const req = { params: { id: 'poll42' } };
+		const res = makeRes();
 
+		await pollsController.get(req, res, () => {});
+		assert.strictEqual(res.statusCode, 200);
 		assert.strictEqual(res.body.status.code, 'ok');
 		assert.strictEqual(res.body.response.poll.id, 'poll42');
 		assert.strictEqual(res.body.response.poll.title, 'Sample Poll');
@@ -137,10 +124,11 @@ describe('Polls Controller (no sinon)', () => {
 	// RESULTS
 	// ----------------------------
 	it('should get poll results', async () => {
-		const res = await request(app)
-			.get('/polls/poll999/results')
-			.expect(200);
+		const req = { params: { id: 'poll999' } };
+		const res = makeRes();
 
+		await pollsController.results(req, res, () => {});
+		assert.strictEqual(res.statusCode, 200);
 		assert.strictEqual(res.body.status.code, 'ok');
 		assert.strictEqual(res.body.response.pollId, 'poll999');
 		assert.strictEqual(res.body.response.results.totalVotes, 10);
@@ -157,10 +145,11 @@ describe('Polls Controller (no sinon)', () => {
 		];
 		Polls.getPolls = async () => fakePolls;
 
-		const res = await request(app)
-			.get('/polls')
-			.expect(200);
+		const req = {};
+		const res = makeRes();
 
+		await pollsController.list(req, res, () => {});
+		assert.strictEqual(res.statusCode, 200);
 		assert.strictEqual(res.body.status.code, 'ok');
 		assert.deepStrictEqual(res.body.response.polls, fakePolls);
 	});
