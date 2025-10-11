@@ -23,6 +23,57 @@ describe('Polls Controller (reuse users)', function () {
 
 		assert.strictEqual(res.statusCode, 200);
 		assert.strictEqual(res.body.status.code, 'ok');
-		console.log(res.body.response.pollId);
+		assert.strictEqual(res.uid, adminUID1);
+		console.log('Created POLL ID:', res.body.response.pollId);
 	});
+
+	it('should add an option to a poll', async function () {
+		const req = { params: { id: res.body.response.pollId }, body: { text: 'Option A', sort: 0 }, uid: adminUID1 };
+		const res = makeRes();
+		const next = (err) => { if (err) throw err; };
+
+		await pollsController.addOption(req, res, next);
+
+		assert.strictEqual(res.statusCode, 200);
+		assert.strictEqual(res.body.status.code, 'ok');
+		assert.ok(res.body.response.optionId);
+	});
+
+	it('should vote on a poll', async function () {
+		const req = { params: { id: res.body.response.pollId }, body: {}, uid: user1 };
+		const res = makeRes();
+		const next = (err) => { if (err) throw err; };
+
+		await pollsController.vote(req, res, next);
+
+		assert.strictEqual(res.statusCode, 200);
+		assert.strictEqual(res.body.status.code, 'ok');
+		assert.strictEqual(res.body.response.success, true);
+	});
+
+	it('should get poll results', async function () {
+		const req = { params: { id: res.body.response.pollId } };
+		const res = makeRes();
+		const next = (err) => { if (err) throw err; };
+
+		await pollsController.results(req, res, next);
+
+		assert.strictEqual(res.statusCode, 200);
+		assert.strictEqual(res.body.status.code, 'ok');
+		assert.ok(res.body.response.results.totalVotes >= 0);
+	});
+
+	it('should return all polls', async function () {
+		const req = {}; // no special properties needed
+		const res = makeRes();
+		const next = (err) => { if (err) throw err; };
+
+		await pollsController.list(req, res, next);
+
+		// Assertions
+		assert.strictEqual(res.statusCode, 200);
+		assert.strictEqual(res.body.status.code, 'ok');
+	});
+
 });
+
