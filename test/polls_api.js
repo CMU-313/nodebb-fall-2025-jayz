@@ -2,7 +2,7 @@
 
 const pollsController = require('../src/controllers/polls');
 const assert = require('assert');
-cconst { adminUID1, user1 } = require('../test/polls_redis_test');
+const { adminUID1, user1 } = require('../test/polls_redis_test');
 
 function makeRes() {
 	const res = {};
