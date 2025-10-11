@@ -13,6 +13,8 @@ function makeRes() {
 	return res;
 }
 
+let savedPollId;
+
 describe('Polls Controller (reuse users)', function () {
 	it('should create a poll with admin', async function () {
 		const req = { body: { title: 'Controller test poll' }, uid: adminUID1 };
@@ -24,11 +26,12 @@ describe('Polls Controller (reuse users)', function () {
 		assert.strictEqual(res.statusCode, 200);
 		assert.strictEqual(res.body.status.code, 'ok');
 		assert.strictEqual(res.uid, adminUID1);
+		savedPollId = res.body.response.pollId;
 		console.log('Created POLL ID:', res.body.response.pollId);
 	});
 
 	it('should add an option to a poll', async function () {
-		const req = { params: { id: res.body.response.pollId }, body: { text: 'Option A', sort: 0 }, uid: adminUID1 };
+		const req = { params: { id: savedPollId }, body: { text: 'Option A', sort: 0 }, uid: adminUID1 };
 		const res = makeRes();
 		const next = (err) => { if (err) throw err; };
 
@@ -40,7 +43,7 @@ describe('Polls Controller (reuse users)', function () {
 	});
 
 	it('should vote on a poll', async function () {
-		const req = { params: { id: res.body.response.pollId }, body: {}, uid: user1 };
+		const req = { params: { id: savedPollId }, body: {}, uid: user1 };
 		const res = makeRes();
 		const next = (err) => { if (err) throw err; };
 
@@ -52,7 +55,7 @@ describe('Polls Controller (reuse users)', function () {
 	});
 
 	it('should get poll results', async function () {
-		const req = { params: { id: res.body.response.pollId } };
+		const req = { params: { id: savedPollId } };
 		const res = makeRes();
 		const next = (err) => { if (err) throw err; };
 
