@@ -23,5 +23,6 @@ describe('Polls Controller (reuse users)', function () {
 
 		assert.strictEqual(res.statusCode, 200);
 		assert.strictEqual(res.body.status.code, 'ok');
+		console.log(res.body.response.pollId);
 	});
 });
