@@ -37,10 +37,12 @@ console.log('HERE5');
 // ----------------------------
 describe('Polls Controller (unit tests only)', () => {
 	console.log('HERE6');
-
 	it('should create a poll successfully', async () => {
+		console.log('HERE45');
 		const req = { body: { title: 'Favorite color?' }, uid: 1 };
+		console.log('HERE46');
 		const res = makeRes();
+		console.log('HERE47');
 		const next = (err) => {
 			if (err) throw err; };
 		
