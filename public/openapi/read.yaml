@@ -128,7 +128,7 @@ paths:
     $ref: "read/admin/manage/categories/category_id/analytics.yaml"
   "/api/admin/manage/categories/{category_id}/federation":
     $ref: "read/admin/manage/categories/category_id/federation.yaml"
-  "/api/admin/manage/privileges/{cid}":
+  "/api/admin/manage/privileges/{cid}": 
     $ref: "read/admin/manage/privileges/cid.yaml"
   /api/admin/manage/tags:
     $ref: "read/admin/manage/tags.yaml"
