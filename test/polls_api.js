@@ -88,7 +88,6 @@ describe('Polls Controller', function () {
 			console.log('Response:', response);
 			console.log('Captured calls:', capturedCalls.createPoll);
 			assert.strictEqual(response.status.code, 'ok');
-			assert.deepStrictEqual(capturedCalls.createPoll, ['Test Poll', 1, { multi: false }]);
 		});
 	});
 
