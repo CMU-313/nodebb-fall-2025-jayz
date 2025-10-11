@@ -179,7 +179,7 @@ Polls.getPolls = async function () {
 	const polls = await db.getObjects(pollKeys);
 	
 	// Parse settings for each poll
-	return polls.map(poll => {
+	return polls.map((poll) => {
 		if (!poll) return null;
 		try {
 			poll.settings = JSON.parse(poll.settings || '{}');
