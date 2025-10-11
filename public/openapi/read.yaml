@@ -119,7 +119,7 @@ paths:
   /api/admin/settings/web-crawler:
     $ref: "read/admin/settings/web-crawler.yaml"
   /api/admin/settings/advanced:
-    $ref: "read/admin/settings/advanced.yaml"
+    $ref: "read/admin/settings/advanced.yaml" 
   /api/admin/manage/categories:
     $ref: "read/admin/manage/categories.yaml"
   "/api/admin/manage/categories/{category_id}":
