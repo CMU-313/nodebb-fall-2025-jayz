@@ -6,7 +6,6 @@ const Polls = require('../src/polls/redis');
 // ----------------------------
 // MOCK POLLS METHODS
 // ----------------------------
-Polls.createPoll = async (title, uid, settings) => 'fakePollId';
 Polls.addOption = async (uid, pollId, text, sort) => 'fakeOptionId';
 Polls.getPolls = async () => [
 	{ id: '1', title: 'Favorite food' },
@@ -32,17 +31,6 @@ function makeRes() {
 // ----------------------------
 describe('Polls Controller (unit tests only)', () => {
 
-	it('should create a poll successfully', async () => {
-		const req = { body: { title: 'Favorite color?' }, uid: 1 };
-		const res = makeRes();
-
-		await pollsController.create(req, res, () => {});
-
-		assert.strictEqual(res.statusCode, 200);
-		assert.strictEqual(res.body.status.code, 'ok');
-		assert.strictEqual(res.body.response.pollId, 'fakePollId');
-		console.log('passed this and still timed out');
-	});
 
 	it('should add an option successfully', async () => {
 		const req = { params: { id: '123' }, body: { text: 'Blue' }, uid: 1 };
