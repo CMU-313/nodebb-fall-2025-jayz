@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment": "This config was generated using 'stryker init'. Please take a look at: https://stryker-mutator.io/docs/stryker-js/configuration/ for more information.",
+  "packageManager": "npm",
+  "reporters": ["html", "clear-text", "progress"],
+  "testRunner": "command",
+  "clearTextReporter": {
+    "fileName": "stryker-report.txt",
+    "logTests": false
+  },
+  "commandRunner": {
+    "command": "npm test -- -- test/polls_redis_test.js"
+  },
+  "coverageAnalysis": "off",
+  "mutate": [
+    "src/polls/redis.js"
+  ],
+  "ignorePatterns": [
+    "node_modules",
+    "coverage",
+    ".stryker-tmp",
+    ".nyc_output",
+    "build/public/plugins/**",
+    "public/plugins/**"
+  ],
+  "timeoutMS": 300000,
+  "concurrency": 2
+}
