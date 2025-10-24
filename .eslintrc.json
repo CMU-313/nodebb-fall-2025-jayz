@@ -1,0 +1,12 @@
+{
+    "extends": [
+        "standard"
+    ],
+    "rules": {
+        "indent": [
+            "error",
+            4
+        ],
+        "no-tabs": "off"
+    }
+}
