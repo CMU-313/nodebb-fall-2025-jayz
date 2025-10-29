@@ -1,7 +1,0 @@
-#!/workspaces/nodebb-fall-2025-jayz/.semgrep-venv/bin/python
-import sys
-from semgrep.console_scripts.entrypoint import main
-if __name__ == '__main__':
-    if sys.argv[0].endswith('.exe'):
-        sys.argv[0] = sys.argv[0][:-4]
-    sys.exit(main())
