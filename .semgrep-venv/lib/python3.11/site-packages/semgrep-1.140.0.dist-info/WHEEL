@@ -1,0 +1,24 @@
+Wheel-Version: 1.0
+Generator: setuptools (80.9.0)
+Root-Is-Purelib: false
+Tag: cp310-none-musllinux_1_0_aarch64
+Tag: cp310-none-manylinux2014_aarch64
+Tag: cp311-none-musllinux_1_0_aarch64
+Tag: cp311-none-manylinux2014_aarch64
+Tag: cp312-none-musllinux_1_0_aarch64
+Tag: cp312-none-manylinux2014_aarch64
+Tag: cp313-none-musllinux_1_0_aarch64
+Tag: cp313-none-manylinux2014_aarch64
+Tag: cp314-none-musllinux_1_0_aarch64
+Tag: cp314-none-manylinux2014_aarch64
+Tag: py310-none-musllinux_1_0_aarch64
+Tag: py310-none-manylinux2014_aarch64
+Tag: py311-none-musllinux_1_0_aarch64
+Tag: py311-none-manylinux2014_aarch64
+Tag: py312-none-musllinux_1_0_aarch64
+Tag: py312-none-manylinux2014_aarch64
+Tag: py313-none-musllinux_1_0_aarch64
+Tag: py313-none-manylinux2014_aarch64
+Tag: py314-none-musllinux_1_0_aarch64
+Tag: py314-none-manylinux2014_aarch64
+

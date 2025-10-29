@@ -1,0 +1,57 @@
+Metadata-Version: 2.4
+Name: semgrep
+Version: 1.140.0
+Summary: Lightweight static analysis for many languages. Find bug variants with patterns that look like source code.
+Home-page: https://github.com/returntocorp/semgrep
+Author: Semgrep Inc.
+Author-email: support@semgrep.com
+License: LGPL-2.1-or-later
+Classifier: Environment :: Console
+Classifier: License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Classifier: Topic :: Security
+Classifier: Topic :: Software Development :: Quality Assurance
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: attrs>=21.3
+Requires-Dist: boltons~=21.0
+Requires-Dist: click-option-group~=0.5
+Requires-Dist: click~=8.1.8
+Requires-Dist: colorama~=0.4.0
+Requires-Dist: defusedxml~=0.7.1
+Requires-Dist: exceptiongroup~=1.2.0
+Requires-Dist: glom~=22.1
+Requires-Dist: mcp==1.16.0
+Requires-Dist: opentelemetry-api~=1.37.0
+Requires-Dist: opentelemetry-sdk~=1.37.0
+Requires-Dist: opentelemetry-exporter-otlp-proto-http~=1.37.0
+Requires-Dist: opentelemetry-instrumentation-requests~=0.58b0
+Requires-Dist: packaging>=21.0
+Requires-Dist: peewee~=3.14
+Requires-Dist: requests~=2.22
+Requires-Dist: rich~=13.5.2
+Requires-Dist: ruamel.yaml>=0.18.15
+Requires-Dist: ruamel.yaml.clib==0.2.14
+Requires-Dist: tomli~=2.0.1
+Requires-Dist: typing-extensions~=4.2
+Requires-Dist: urllib3~=2.0
+Requires-Dist: wcmatch~=8.3
+Requires-Dist: pywin32==311; sys_platform == "win32"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+**SETUP: README NOT FOUND**
