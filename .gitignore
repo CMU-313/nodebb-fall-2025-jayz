@@ -77,3 +77,4 @@ test.sh
 
 .docker/**
 !**/.gitkeep
+.semgrep-venv/
