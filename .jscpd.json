@@ -1,0 +1,19 @@
+{
+  "threshold": 1,
+  "reporters": ["html", "console"],
+  "ignore": [
+    "**/node_modules/**",
+    "**/.git/**",
+    "**/coverage/**",
+    "**/build/**",
+    "**/public/vendor/**",
+    "**/vendor/**",
+    "**/*.min.js",
+    "**/*.map"
+  ],
+  "format": [
+    "javascript",
+    "typescript"
+  ],
+  "output": "./jscpd-report"
+}
