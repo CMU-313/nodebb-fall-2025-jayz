@@ -9,6 +9,9 @@ const User = require('../src/user');
 const Groups = require('../src/groups');
 const assert = require('assert');
 
+let adminUID1;
+let user1;
+
 describe('Redis Polls (integration)', function () {
 	this.timeout(30000);
 
@@ -16,7 +19,7 @@ describe('Redis Polls (integration)', function () {
 
 	it('creates a poll, adds options and records votes', async function () {
 		// Create admin userID 
-		const adminUID1 = await User.create({
+		adminUID1 = await User.create({
 			username: 'admin',
 			password: 'password123',
 			email: 'admin@test.com',
@@ -29,7 +32,7 @@ describe('Redis Polls (integration)', function () {
 		console.log('SUCCESS: Created poll id:', pollId);
 
 		// Create Regular userID 
-		const user1 = await User.create({
+		user1 = await User.create({
 			username: 'John Doe',
 			password: 'password123',
 			email: 'John@test.com',
@@ -62,7 +65,7 @@ describe('Redis Polls (integration)', function () {
 		// Add options with admin
 		const opt1 = await Polls.addOption(adminUID1, pollId, 'Red', 1);
 		const opt2 = await Polls.addOption(adminUID1, pollId, 'Blue', 2);
-		console.log('SUCESS: Added options with admin:', opt1, opt2);
+		console.log('SUCCESS: Added options with admin:', opt1, opt2);
 
 		// Add options with user
 		try {
@@ -196,3 +199,9 @@ describe('Redis Polls (integration)', function () {
 		}
 	});
 });
+
+
+module.exports = {
+	adminUID1,
+	user1, 
+};

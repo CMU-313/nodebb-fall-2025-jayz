@@ -743,6 +743,7 @@ describe('User', () => {
 					username: 'updatedUserName',
 					email: 'updatedEmail@me.com',
 					fullname: 'updatedFullname',
+					nickname: 'updatedNickname',
 					groupTitle: 'testGroup',
 					birthday: '01/01/1980',
 					signature: 'nodebb is good',
@@ -754,6 +755,7 @@ describe('User', () => {
 				assert.equal(result.username, 'updatedUserName');
 				assert.equal(result.userslug, 'updatedusername');
 				assert.equal(result.fullname, 'updatedFullname');
+				assert.equal(result.nickname, 'updatedNickname');
 
 				const userData = await db.getObject(`user:${uid}`);
 				Object.keys(data).forEach((key) => {
@@ -2469,8 +2471,28 @@ describe('User', () => {
 			const { body: body2 } = await request.get(`${nconf.get('url')}/api/topic/${body1.topics[0].slug}`);
 			assert(!body2.posts[0].user.hasOwnProperty('fullname'));
 		});
+		
+		it('displayname remains nickname even when fullname is hidden', async () => {
+			meta.config.hideFullname = 1;
+			const me = await socketUser.getUserByUsername({ uid: testUid }, 'updatedUserName');
+			assert.strictEqual(me.displayname, 'updatedNickname');
+			meta.config.hideFullname = 0;
+		}); 
 	});
 
+	describe('displayname precedence', () => {
+		let uid;
+		before(async () => {
+			uid = await User.create({ username: 'chainuser', fullname: 'Full Name', password: '123456' });
+		});
+	  
+		it('falls back to username when nickname & fullname are empty/hidden', async () => {
+			await User.setUserFields(uid, { nickname: '', fullname: '' });
+			const profile = await socketUser.getUserByUID({ uid }, uid);
+			assert.strictEqual(profile.displayname, 'chainuser');
+		});
+	});
+	  
 	describe('user blocking methods', (done) => {
 		let blockeeUid;
 		before((done) => {
