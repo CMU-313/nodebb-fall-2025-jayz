@@ -49,6 +49,8 @@ get:
                               type: string
                             text:
                               type: string
+                          required:
+                            - name
                           nullable: true
                         outdated:
                           type: boolean
@@ -106,6 +108,8 @@ get:
                               type: string
                             text:
                               type: string
+                          required:
+                            - name
                           nullable: true
                         downloads:
                           type: number
@@ -165,6 +169,8 @@ get:
                               type: string
                             text:
                               type: string
+                          required:
+                            - name
                           nullable: true
                         downloads:
                           type: number
@@ -263,6 +269,8 @@ get:
                               type: string
                             text:
                               type: string
+                          required:
+                            - name
                         outdated:
                           type: boolean
                       required:
@@ -354,6 +362,8 @@ get:
                               type: string
                             text:
                               type: string
+                          required:
+                            - name
                           nullable: true
                         outdated:
                           type: boolean
