@@ -1,5 +1,6 @@
 'use strict';
 
+// Connect poll creation panel to API endpoints
 define('admin/manage/polls', ['api', 'alerts', 'bootstrap'], function (api, alerts, bootstrap) {
 	const Polls = {};
 
@@ -221,14 +222,15 @@ define('admin/manage/polls', ['api', 'alerts', 'bootstrap'], function (api, aler
 		// Add polls to table
 		polls.forEach(poll => {
 			const tr = document.createElement('tr');
-			const createdDate = new Date(poll.created);
+			const createdDate = new Date(poll.created_at || poll.created);
+			const pollId = poll.poll_id || poll.id;
 			
 			tr.innerHTML = `
-				<td>${poll.id}</td>
+				<td>${pollId}</td>
 				<td>${poll.title}</td>
 				<td>${createdDate.toLocaleString()}</td>
 				<td>
-					<button class="btn btn-sm btn-primary view-poll" data-poll-id="${poll.id}">
+					<button class="btn btn-sm btn-primary view-poll" data-poll-id="${pollId}">
 						<i class="fa fa-eye"></i> View
 					</button>
 				</td>
