@@ -67,11 +67,12 @@ coverage
 *.log
 test/files/normalise.jpg.png
 test/files/normalise-resized.jpg
-package-lock.json
-/package.json
 *.mongodb
 link-plugins.sh
 test.sh
 
 .docker/**
 !**/.gitkeep
+
+# stryker temp files
+.stryker-tmp
