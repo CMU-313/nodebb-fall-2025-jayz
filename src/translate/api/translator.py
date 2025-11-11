@@ -28,7 +28,9 @@ def get_language(post: str) -> str:
         ],
     )
 
-    return response["message"]["content"].strip()
+    language = response["message"]["content"].strip()
+    print(f"DEBUG: Detected language for '{post}': '{language}'")
+    return language
 
 def get_translation(post: str) -> str:
     context = (
@@ -53,18 +55,22 @@ def query_llm_robust(post: str) -> tuple[bool, str]:
 
     try:
         raw_language = get_language(post)
-    except Exception:
+    except Exception as e:
+        print(f"DEBUG: Language detection error: {e}")
         return fallback_result
 
     if not isinstance(raw_language, str):
         raw_language = str(raw_language)
 
     lang_clean = raw_language.strip().lower()
+    print(f"DEBUG: Cleaned language string: '{lang_clean}'")
     is_english = (lang_clean == "english")
+    print(f"DEBUG: is_english result: {is_english}")
 
     try:
         raw_translation = get_translation(post)
-    except Exception:
+    except Exception as e:
+        print(f"DEBUG: Translation error: {e}")
         return (is_english, post)
 
     if not isinstance(raw_translation, str):

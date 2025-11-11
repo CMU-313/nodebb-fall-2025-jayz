@@ -5,8 +5,9 @@ from translator import get_language, get_translation, query_llm_robust
 class TestTranslator(unittest.TestCase):
     @patch('translator.client')
     def test_get_language_english(self, mock_client):
-        mock_response = MagicMock()
-        mock_response["message"] = {"content": "English"}
+        mock_response = {
+            "message": {"content": "English"}
+        }
         mock_client.chat.return_value = mock_response
         
         result = get_language("Hello, how are you?")
@@ -14,8 +15,9 @@ class TestTranslator(unittest.TestCase):
 
     @patch('translator.client')
     def test_get_language_spanish(self, mock_client):
-        mock_response = MagicMock()
-        mock_response["message"] = {"content": "Spanish"}
+        mock_response = {
+            "message": {"content": "Spanish"}
+        }
         mock_client.chat.return_value = mock_response
         
         result = get_language("¡Hola! ¿Cómo estás?")
@@ -23,8 +25,9 @@ class TestTranslator(unittest.TestCase):
 
     @patch('translator.client')
     def test_get_translation(self, mock_client):
-        mock_response = MagicMock()
-        mock_response["message"] = {"content": "Hello, how are you?"}
+        mock_response = {
+            "message": {"content": "Hello, how are you?"}
+        }
         mock_client.chat.return_value = mock_response
         
         result = get_translation("¡Hola! ¿Cómo estás?")
